@@ -124,3 +124,42 @@ function AuthExample() {
   };
 }
 ```
+
+## API Reference
+
+### Data Fetching Hooks
+
+```typescript
+/**
+ * Hook to fetch user profile data
+ * @param userId - Optional user ID. If not provided, fetches current user's profile
+ * @returns Query object with user data, loading and error states
+ */
+function useUser(userId?: string): UseQueryResult<{
+  id: string;
+  username: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+  created_at: string;
+  updated_at: string;
+}>;
+```
+
+### Data Mutation Hooks
+
+```typescript
+/**
+ * Hook to update the current user's profile
+ * @returns Mutation object for updating user data
+ */
+function useUpdateUser(): UseMutationResult<
+  void,
+  Error,
+  {
+    display_name?: string;
+    avatar_url?: string;
+    bio?: string;
+  }
+>;
+```

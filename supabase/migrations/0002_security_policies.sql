@@ -26,16 +26,6 @@ as $$
     );
 $$;
 
--- Users policies
-create policy "Users are viewable by everyone"
-    on public.users for select
-    using (true);
-
-create policy "Users can update own profile"
-    on public.users for update
-    using (auth.uid() = id)
-    with check (auth.uid() = id);
-
 -- Videos policies
 create policy "Videos are viewable by everyone when published"
     on public.videos for select
@@ -137,4 +127,35 @@ begin
         values (auth.uid(), target_user_id);
     end if;
 end;
-$$; 
+$$;
+
+-- Policy to allow users to insert their own record during signup
+create policy "Users can insert their own record during signup"
+on public.users
+for insert
+to authenticated
+with check (
+  auth.uid() = id
+);
+
+-- Policy to allow users to read any user profile
+create policy "Anyone can read user profiles"
+on public.users
+for select
+to public
+using (true);
+
+-- Policy to allow users to update their own profile
+create policy "Users can update their own profile"
+on public.users
+for update
+to authenticated
+using (auth.uid() = id)
+with check (auth.uid() = id);
+
+-- Policy to allow users to delete their own profile
+create policy "Users can delete their own profile"
+on public.users
+for delete
+to authenticated
+using (auth.uid() = id); 

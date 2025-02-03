@@ -12,7 +12,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, username: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -32,8 +32,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for changes on auth state
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
+
+      // Handle confirmed signup
+      if (event === 'SIGNED_IN' && session?.user.user_metadata?.username) {
+        try {
+          const { error: dbError } = await supabase
+            .from('users')
+            .insert({
+              id: session.user.id,
+              username: session.user.user_metadata.username,
+              display_name: session.user.user_metadata.username,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            });
+
+          if (dbError) throw dbError;
+        } catch (error) {
+          console.error('Error creating user profile:', error);
+          // Optionally handle the error (e.g., show a notification)
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -47,12 +67,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error;
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
+  const signUp = useCallback(async (email: string, password: string, username: string) => {
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          username: username, // Store username in user metadata
+        },
+      },
     });
-    if (error) throw error;
+    
+    if (authError) throw authError;
+    if (!authData.user) throw new Error('User creation failed');
   }, []);
 
   const signOut = useCallback(async () => {
