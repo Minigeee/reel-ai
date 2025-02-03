@@ -1,6 +1,6 @@
 -- Enable necessary extensions
 create extension if not exists "uuid-ossp";
-create extension if not exists "pg_crypto";
+create extension if not exists "pgcrypto";
 
 -- Utility functions for performance and security
 create or replace function public.get_current_user_id()

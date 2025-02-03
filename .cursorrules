@@ -31,6 +31,14 @@
 - Implement proper loading states for async operations
 - Optimize video processing operations to run in background threads
 
+### Data Querying
+- Use React Query (TanStack Query) for all data fetching and mutations
+- Implement proper query keys following the collection/entity/parameters pattern
+- Enable automatic background refetching with appropriate staleTime
+- Use optimistic updates for mutations when possible
+- Implement proper error handling and retry logic
+- Structure query hooks in dedicated files under features/queries
+
 ## Rust Development
 
 ### Code Organization
