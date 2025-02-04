@@ -1,7 +1,6 @@
-import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
-import { PlayIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 
@@ -14,30 +13,7 @@ export function VideoPlayer({ url, className }: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [showControls, setShowControls] = useState(true);
   const playerRef = useRef<ReactPlayer>(null);
-  const hideTimeout = useRef<NodeJS.Timeout>();
-
-  // Handle control visibility
-  useEffect(() => {
-    if (hideTimeout.current) {
-      clearTimeout(hideTimeout.current);
-    }
-
-    if (isPlaying) {
-      setShowControls(false);
-    } else {
-      hideTimeout.current = setTimeout(() => {
-        setShowControls(false);
-      }, 500);
-    }
-
-    return () => {
-      if (hideTimeout.current) {
-        clearTimeout(hideTimeout.current);
-      }
-    };
-  }, [isPlaying]);
 
   const handleProgress = ({ played }: { played: number }) => {
     setProgress(played * 100);
@@ -50,7 +26,6 @@ export function VideoPlayer({ url, className }: VideoPlayerProps) {
   };
 
   const handleVideoClick = () => {
-    setShowControls(true);
     setIsPlaying(!isPlaying);
   };
 
@@ -80,7 +55,29 @@ export function VideoPlayer({ url, className }: VideoPlayerProps) {
         <div
           className='absolute inset-0 flex items-center justify-center'
           onClick={handleVideoClick}
-        />
+        >
+          {!isPlaying && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className='rounded-full bg-black/50 p-4'
+            >
+              <svg
+                className='h-12 w-12 text-white'
+                fill='none'
+                viewBox='0 0 24 24'
+                stroke='currentColor'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z'
+                />
+              </svg>
+            </motion.div>
+          )}
+        </div>
       </div>
 
       {/* Progress controls */}

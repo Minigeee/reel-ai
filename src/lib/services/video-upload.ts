@@ -50,7 +50,7 @@ export async function uploadVideo(filePath: string, userId: string) {
       video_url: fileName,
       title: 'Untitled Video', // TODO : Will be updated later
       duration: 60, // TODO : Will be updated after processing
-      status: 'processing',
+      status: 'published',
     });
     if (dbError) throw dbError;
 

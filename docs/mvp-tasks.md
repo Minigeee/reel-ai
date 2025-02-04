@@ -62,7 +62,6 @@ Tasks:
    - Basic video metadata
    - Loading states
 
-
 3. [ ] Implement video playback:
    - Native video player integration
    - Basic playback controls

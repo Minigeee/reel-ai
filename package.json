@@ -35,6 +35,7 @@
     "@tauri-apps/plugin-upload": "^2.2.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "embla-carousel-react": "^8.5.2",
     "lodash": "^4.17.21",
     "lucide-react": "^0.474.0",
     "motion": "^12.0.11",
