@@ -21,9 +21,14 @@
 - Ensure proper typing for Tauri IPC calls and events
 
 ### UI and Styling
-- Use Shadcn UI and Tailwind for components and styling
-- Implement responsive design with Tailwind CSS; use a mobile-first approach
-- Use Framer Motion for animations, keeping performance in mind
+- Design for mobile-first with touch-friendly UI elements (min 44px touch targets)
+- Use Shadcn UI and Tailwind for native-like mobile components
+- Implement swipe gestures and smooth transitions for navigation
+- Ensure proper spacing for mobile viewports (16-24px margins)
+- Place key interactive elements in thumb-reachable zones
+- Implement pull-to-refresh and infinite scroll patterns
+- Use Framer Motion for performant mobile animations and gestures
+- Design loading states and skeleton screens for perceived performance
 
 ### Performance Optimization
 - Optimize asset loading and bundling for Tauri's static file serving

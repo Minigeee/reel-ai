@@ -1,63 +1,68 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { toast } from '@/hooks/use-toast';
-import { useAuth } from '@/lib/providers/auth-provider';
-import { uploadVideo } from '@/lib/services/video-upload';
-import { useState } from 'react';
-import { VideoPlayer } from './video-player';
+import { useCreatorStore } from '@/lib/stores/creator-store';
 import { VideoSelector } from './video-selector';
+import { VideoDetailsForm } from './video-details-form';
+import { Button } from '@/components/ui/button';
+import { VideoPlayer } from './video-player';
+import { ArrowLeft } from 'lucide-react';
 
 export function VideoCreator() {
-  const [selectedVideo, setSelectedVideo] = useState<{
-    path: string;
-    url: string;
-  } | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const { user } = useAuth();
+  const { step, setStep, videoFile, setVideoFile } = useCreatorStore();
 
-  const handleUpload = async () => {
-    if (!selectedVideo || !user) return;
-
-    setIsUploading(true);
-    try {
-      const uploadId = await uploadVideo(selectedVideo.path, user.id);
-      toast({
-        title: 'Video uploaded',
-        description: 'Your video has been uploaded successfully',
-      });
-      // You might want to redirect to an edit page or dashboard here
-    } catch (error) {
-      toast({
-        title: 'Upload failed',
-        description: 'Please try again',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsUploading(false);
-    }
+  const handleBack = () => {
+    setStep(step - 1);
   };
 
   return (
-    <div className='mx-auto max-w-md space-y-6 p-4'>
-      {!selectedVideo ? (
-        <VideoSelector onSelect={setSelectedVideo} />
+    <div className="mx-auto max-w-md space-y-6 p-5">
+      {step === 0 ? (
+        <div className="space-y-6">
+          {!videoFile ? (
+            <VideoSelector
+              onSelect={(file) => {
+                setVideoFile(file);
+                setStep(1);
+              }}
+            />
+          ) : (
+            <div className="space-y-4">
+              <VideoPlayer url={videoFile.url} />
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => setVideoFile(null)}
+                >
+                  Choose Another
+                </Button>
+                <Button 
+                  className="flex-1"
+                  onClick={() => setStep(1)}
+                >
+                  Continue
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       ) : (
-        <>
-          <VideoPlayer url={selectedVideo.url} />
-
-          <div className='space-y-4'>
-            {/* Future edit controls will go here */}
-
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
             <Button
-              onClick={handleUpload}
-              disabled={isUploading}
-              className='w-full'
+              variant="ghost"
+              size="icon"
+              onClick={handleBack}
+              className="h-8 w-8"
             >
-              {isUploading ? 'Uploading...' : 'Upload Video'}
+              <ArrowLeft className="h-4 w-4" />
             </Button>
+            <h1 className="text-lg font-semibold">Upload Details</h1>
           </div>
-        </>
+          
+          {videoFile && <VideoPlayer url={videoFile.url} />}
+          <VideoDetailsForm />
+        </div>
       )}
     </div>
   );

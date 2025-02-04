@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
+import { Card } from '@/components/ui/card';
+import { Upload, Camera } from 'lucide-react';
 
 interface VideoSelectorProps {
   onSelect: (fileInfo: { path: string; url: string }) => void;
@@ -23,11 +25,8 @@ export function VideoSelector({ onSelect, isLoading }: VideoSelectorProps) {
 
       if (!selected) return;
 
-      // Convert the file path to a URL that can be used by react-player
       const filePath = selected as string;
       const fileUrl = convertFileSrc(filePath);
-      console.log('fileUrl', fileUrl);
-
       onSelect({ path: filePath, url: fileUrl });
     } catch (error) {
       toast({
@@ -39,13 +38,44 @@ export function VideoSelector({ onSelect, isLoading }: VideoSelectorProps) {
   };
 
   return (
-    <Button
-      onClick={handleSelectVideo}
-      className='w-full'
-      size='lg'
-      disabled={isLoading}
-    >
-      {isLoading ? 'Loading...' : 'Select Video'}
-    </Button>
+    <div className="space-y-4">
+      <h1 className="text-xl font-semibold text-center">
+        Create New Video
+      </h1>
+      
+      <div className="grid grid-cols-1 gap-4">
+        <Card 
+          className="p-6 flex flex-col items-center gap-4 cursor-pointer hover:bg-muted/50 transition-colors"
+          onClick={handleSelectVideo}
+        >
+          <Upload className="h-8 w-8 text-primary" />
+          <div className="text-center">
+            <h3 className="font-medium">Choose from Gallery</h3>
+            <p className="text-sm text-muted-foreground">
+              Upload a video from your device
+            </p>
+          </div>
+        </Card>
+
+        <Card 
+          className="p-6 flex flex-col items-center gap-4 cursor-pointer hover:bg-muted/50 transition-colors"
+          onClick={() => {
+            // TODO: Implement camera recording
+            toast({
+              title: 'Coming soon',
+              description: 'Camera recording will be available soon',
+            });
+          }}
+        >
+          <Camera className="h-8 w-8 text-primary" />
+          <div className="text-center">
+            <h3 className="font-medium">Record Video</h3>
+            <p className="text-sm text-muted-foreground">
+              Create a new video using your camera
+            </p>
+          </div>
+        </Card>
+      </div>
+    </div>
   );
 }

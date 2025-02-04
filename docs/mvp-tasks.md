@@ -51,18 +51,18 @@ Tasks:
 This section focuses on displaying the uploaded videos.
 
 Tasks:
-1. [ ] Create video list query:
+1. [X] Create video list query:
    - Set up React Query for videos
    - Implement basic pagination
    - Sort by recent first
 
-2. [ ] Build video list UI:
+2. [X] Build video list UI:
    - Video card component
    - Thumbnail display
    - Basic video metadata
    - Loading states
 
-3. [ ] Implement video playback:
+3. [X] Implement video playback:
    - Native video player integration
    - Basic playback controls
    - Handle playback errors
@@ -72,17 +72,17 @@ Tasks:
 This section connects the upload and display functionality.
 
 Tasks:
-1. [ ] Create video publishing form:
+1. [X] Create video publishing form:
    - Title and description inputs
    - Basic validation
    - Submit handling
 
-2. [ ] Implement publishing logic:
+2. [X] Implement publishing logic:
    - Save video metadata to database
    - Update video status
    - Handle publishing errors
 
-3. [ ] Add success/error feedback:
+3. [X] Add success/error feedback:
    - Success notifications
    - Error messages
    - Redirect after publish

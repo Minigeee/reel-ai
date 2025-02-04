@@ -2,7 +2,14 @@ import { useUploadStore } from '@/lib/stores/upload-store';
 import { supabase } from '@/lib/supabase';
 import { readFile } from '@tauri-apps/plugin-fs';
 
-export async function uploadVideo(filePath: string, userId: string) {
+interface VideoDetails {
+  title: string;
+  description?: string;
+  tags?: string[];
+  category?: string;
+}
+
+export async function uploadVideo(filePath: string, userId: string, details: VideoDetails) {
   const uploadStore = useUploadStore.getState();
   const uploadId = crypto.randomUUID();
 
@@ -43,15 +50,19 @@ export async function uploadVideo(filePath: string, userId: string) {
 
     if (error) throw error;
 
-    // Create video record in database
+    // Create video record in database with details
     const { error: dbError } = await supabase.from('videos').insert({
       id: uploadId,
       user_id: userId,
       video_url: fileName,
-      title: 'Untitled Video', // TODO : Will be updated later
-      duration: 60, // TODO : Will be updated after processing
+      title: details.title,
+      description: details.description,
+      tags: details.tags,
+      category: details.category,
+      duration: 60, // TODO: Will be updated after processing
       status: 'published',
     });
+    
     if (dbError) throw dbError;
 
     uploadStore.setCompleted(uploadId);
