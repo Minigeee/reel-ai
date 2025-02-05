@@ -26,3 +26,6 @@ tauri-plugin-log = "2.0.0-rc"
 tauri-plugin-fs = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-upload = "2"
+
+# Add the base64 crate
+base64 = "0.21"

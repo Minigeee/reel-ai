@@ -1,8 +1,11 @@
 import { Slider } from '@/components/ui/slider';
+import { useVideoPlayerStore } from '@/lib/stores/video-player-store';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import { useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
+import { TimelineEditor } from '../editor/timeline-editor';
 
 interface VideoPlayerProps {
   url: string;
@@ -10,17 +13,28 @@ interface VideoPlayerProps {
 }
 
 export function VideoPlayer({ url, className }: VideoPlayerProps) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
+  // Use the store state instead of local state
+  const isPlaying = useVideoPlayerStore((state) => state.isPlaying);
+  const progress = useVideoPlayerStore((state) => state.progress);
+  const duration = useVideoPlayerStore((state) => state.duration);
+  const isLoading = useVideoPlayerStore((state) => state.isLoading);
+  const setIsPlaying = useVideoPlayerStore((state) => state.setIsPlaying);
+  const setProgress = useVideoPlayerStore((state) => state.setProgress);
+  const setDuration = useVideoPlayerStore((state) => state.setDuration);
+  const setIsLoading = useVideoPlayerStore((state) => state.setIsLoading);
+
   const playerRef = useRef<ReactPlayer>(null);
+
+  // Add timeline visibility state
+  const [showTimeline, setShowTimeline] = useState(true);
 
   const handleProgress = ({ played }: { played: number }) => {
     setProgress(played * 100);
   };
 
   const handleSliderChange = (value: number[]) => {
-    const time = value[0] / 100;
+    // Calculate the target time in seconds based on current duration
+    const time = (value[0] / 100) * duration;
     setProgress(value[0]);
     playerRef.current?.seekTo(time);
   };
@@ -47,16 +61,29 @@ export function VideoPlayer({ url, className }: VideoPlayerProps) {
           height='100%'
           playing={isPlaying}
           onProgress={handleProgress}
-          onDuration={setDuration}
+          onDuration={(dur) => {
+            setDuration(dur);
+            setIsLoading(false);
+          }}
+          onBuffer={() => setIsLoading(true)}
+          onBufferEnd={() => setIsLoading(false)}
+          // TODO: Integrate video stream from Tauri backend if needed
           style={{ objectFit: 'contain' }}
         />
+
+        {/* Loading overlay */}
+        {isLoading && (
+          <div className='absolute inset-0 flex items-center justify-center bg-black/50'>
+            <Loader2 className='h-8 w-8 animate-spin text-white' />
+          </div>
+        )}
 
         {/* Overlay controls */}
         <div
           className='absolute inset-0 flex items-center justify-center'
           onClick={handleVideoClick}
         >
-          {!isPlaying && (
+          {!isPlaying && !isLoading && (
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -80,20 +107,43 @@ export function VideoPlayer({ url, className }: VideoPlayerProps) {
         </div>
       </div>
 
-      {/* Progress controls */}
-      <div className='space-y-2 px-2'>
-        <Slider
-          value={[progress]}
-          onValueChange={handleSliderChange}
-          max={100}
-          step={0.1}
-          className='w-full'
-        />
-        <div className='flex justify-between text-sm text-muted-foreground'>
-          <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(duration)}</span>
+      {/* Timeline Section */}
+      {showTimeline && (
+        <div className="w-full border-t border-border pt-4">
+          <TimelineEditor 
+            videoUrl={url} 
+            onScrub={(time) => {
+              setProgress((time / duration) * 100);
+              playerRef.current?.seekTo(time);
+            }}
+          />
         </div>
-      </div>
+      )}
+
+      {/* Progress controls - show only when timeline is hidden */}
+      {!showTimeline && (
+        <div className='space-y-2 px-2'>
+          <Slider
+            value={[progress]}
+            onValueChange={handleSliderChange}
+            max={100}
+            step={0.1}
+            className='w-full'
+          />
+          <div className='flex justify-between text-sm text-muted-foreground'>
+            <span>{formatTime(currentTime)}</span>
+            <span>{formatTime(duration)}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Timeline toggle button */}
+      {/* <button
+        onClick={() => setShowTimeline(!showTimeline)}
+        className="text-sm text-muted-foreground hover:text-foreground"
+      >
+        {showTimeline ? 'Hide Timeline' : 'Show Timeline'}
+      </button> */}
     </div>
   );
 }
