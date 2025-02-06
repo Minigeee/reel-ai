@@ -6,7 +6,7 @@ A collection of usage examples for various components in this project.
 
 ## Database Types
 
-Import types from `@/lib/database.types`:
+Import types from `~/lib/database.types`:
 
 ```typescript
 import type {
@@ -14,7 +14,7 @@ import type {
   TablesInsert,
   TablesUpdate,
   Enums,
-} from '@/lib/database.types';
+} from '~/lib/database.types';
 
 // Row type (full database record)
 type Ticket = Tables<'tickets'>;
@@ -43,7 +43,7 @@ type TicketForm = Partial<TablesInsert<'tickets'>>;
 ### Supabase Client
 
 ```tsx
-import { supabase } from '@/lib/supabase';
+import { supabase } from '~/lib/supabase';
 
 export default async function PrivatePage() {
   const { data: tickets } = await supabase.from('tickets').select('*');
@@ -52,77 +52,79 @@ export default async function PrivatePage() {
 }
 ```
 
-## Authentication
-
-### Auth Context & Protected Routes
+## Camera
 
 ```tsx
-// Using auth context in components
-import { useAuth } from '@/lib/providers/auth-provider';
+import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { useState } from 'react';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-function ProfileButton() {
-  const { user, signOut } = useAuth();
-  
-  if (!user) return null;
-  
+export default function App() {
+  const [facing, setFacing] = useState<CameraType>('back');
+  const [permission, requestPermission] = useCameraPermissions();
+
+  if (!permission) {
+    // Camera permissions are still loading.
+    return <View />;
+  }
+
+  if (!permission.granted) {
+    // Camera permissions are not granted yet.
+    return (
+      <View style={styles.container}>
+        <Text style={styles.message}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
+  }
+
+  function toggleCameraFacing() {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  }
+
   return (
-    <button onClick={signOut}>
-      Sign out {user.email}
-    </button>
+    <View style={styles.container}>
+      <CameraView style={styles.camera} facing={facing}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+            <Text style={styles.text}>Flip Camera</Text>
+          </TouchableOpacity>
+        </View>
+      </CameraView>
+    </View>
   );
 }
 
-// Protecting routes
-import { ProtectedRoute } from '@/components/auth/protected-route';
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  message: {
+    textAlign: 'center',
+    paddingBottom: 10,
+  },
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    margin: 64,
+  },
+  button: {
+    flex: 1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+});
 
-// In any page that requires authentication:
-export default function SecurePage() {
-  return (
-    <ProtectedRoute>
-      <div>
-        This content is only visible to authenticated users
-      </div>
-    </ProtectedRoute>
-  );
-}
-
-// Custom loading state and redirect
-export function AdminPage() {
-  return (
-    <ProtectedRoute 
-      loading={<div>Loading admin panel...</div>}
-      redirectTo="/login"
-    >
-      <div>Admin Dashboard</div>
-    </ProtectedRoute>
-  );
-}
-```
-
-### Auth Operations
-
-```tsx
-import { useAuth } from '@/lib/providers/auth-provider';
-
-function AuthExample() {
-  const { signIn, signUp, signOut, user } = useAuth();
-
-  const handleSignIn = async () => {
-    try {
-      await signIn('user@example.com', 'password123');
-    } catch (error) {
-      console.error('Sign in failed:', error);
-    }
-  };
-
-  const handleSignUp = async () => {
-    try {
-      await signUp('newuser@example.com', 'password123');
-    } catch (error) {
-      console.error('Sign up failed:', error);
-    }
-  };
-}
 ```
 
 ## API Reference
@@ -132,8 +134,8 @@ function AuthExample() {
 ```typescript
 /**
  * Hook to fetch user profile data
- * @param userId - Optional user ID. If not provided, fetches current user's profile
- * @returns Query object with user data, loading and error states
+ * ~param userId - Optional user ID. If not provided, fetches current user's profile
+ * ~returns Query object with user data, loading and error states
  */
 function useUser(userId?: string): UseQueryResult<{
   id: string;
@@ -151,7 +153,7 @@ function useUser(userId?: string): UseQueryResult<{
 ```typescript
 /**
  * Hook to update the current user's profile
- * @returns Mutation object for updating user data
+ * ~returns Mutation object for updating user data
  */
 function useUpdateUser(): UseMutationResult<
   void,

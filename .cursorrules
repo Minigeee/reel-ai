@@ -10,7 +10,7 @@
 - Structure files: exported component, subcomponents, helpers, static content, types
 
 ### Naming Conventions
-- Components should go in src/components and be named like new-component.tsx
+- Components should go in src/components and be named like NewComponent.tsx
 - Use lowercase with dashes for directories (e.g., components/video-editor)
 - Favor named exports for components
 
@@ -18,23 +18,24 @@
 - Use TypeScript for all frontend code; prefer interfaces over types
 - Avoid enums; use const maps instead
 - Use functional components with TypeScript interfaces
-- Ensure proper typing for Tauri IPC calls and events
+- Ensure proper typing for API calls and events
 
 ### UI and Styling
 - Design for mobile-first with touch-friendly UI elements (min 44px touch targets)
-- Use Shadcn UI and Tailwind for native-like mobile components
-- Implement swipe gestures and smooth transitions for navigation
+- Use React Native Reusables (RNR) for native mobile components (import from `~/components/ui`)
+- Use lucide icons (import from `lucide-react-native`)
 - Ensure proper spacing for mobile viewports (16-24px margins)
 - Place key interactive elements in thumb-reachable zones
-- Implement pull-to-refresh and infinite scroll patterns
-- Use Framer Motion for performant mobile animations and gestures
+- Use React Native Reanimated for performant mobile animations and gestures
 - Design loading states and skeleton screens for perceived performance
+- Use Tailwind CSS for styling
 
 ### Performance Optimization
-- Optimize asset loading and bundling for Tauri's static file serving
-- Use dynamic imports for heavy components
+- Optimize asset loading and bundling
+- Use lazy loading for heavy components
 - Implement proper loading states for async operations
-- Optimize video processing operations to run in background threads
+- Use proper image caching and optimization
+- Implement memory management best practices for video content
 
 ### Data Querying
 - Use React Query (TanStack Query) for all data fetching and mutations
@@ -44,64 +45,25 @@
 - Implement proper error handling and retry logic
 - Structure query hooks in dedicated files under features/queries
 
-## Rust Development
-
-### Code Organization
-- Place Rust code in src-tauri/src
-- Organize code into modules based on functionality
-- Use lib.rs for shared code between desktop and mobile
-- Separate implementations into desktop.rs and mobile.rs
-
-### Rust Best Practices
-- Follow Rust 2021 edition idioms
-- Use proper error handling with custom Error types
-- Implement proper logging using tracing
-- Use async/await for I/O operations
-- Prefer owned types over references when appropriate
-- Use proper lifetime annotations when necessary
-
-### Tauri v2 Guidelines
-- Use Tauri's plugin system for extensible features
-- Implement proper permission handling for commands
-- Use channels for streaming data between Rust and JS
-- Properly handle window management and lifecycle events
-- Follow mobile-specific guidelines for Android/iOS support
-
-### Video Processing
-- Implement video processing in Rust using FFmpeg bindings
-- Use proper error handling for media operations
-- Implement progress reporting through Tauri events
-- Optimize for different platforms' video codecs
-- Use background threads for heavy processing
-
 ## Project Structure
 
 ```
 project-root/
-├── src/ # Frontend code
-│ ├── components/ # Reusable UI components
-│ │ ├── ui/ # Basic UI components
-│ │ ├── video/ # Video-related components
-│ │ └── editor/ # Editor components
-│ ├── lib/ # Shared utilities
-│ └── types/ # TypeScript types
-├── src-tauri/ # Rust backend code
-│ ├── src/
-│ │ ├── lib.rs # Shared code
-│ │ ├── desktop.rs # Desktop-specific code
-│ │ ├── mobile.rs # Mobile-specific code
-│ │ ├── commands.rs # Tauri commands
-│ │ └── video/ # Video processing modules
-│ ├── Cargo.toml
-│ └── tauri.conf.json
+├── components/ # Reusable UI components
+│ ├── ui/ # Basic UI components
+│ ├── video/ # Video-related components
+│ └── editor/ # Editor components
+├── lib/ # Shared utilities
+├── types/ # TypeScript types
+├── app/ # Expo Router pages
 └── package.json
 ```
 
 ### Component Organization
-Within the /src/components folder, organize components by feature:
+Within the /components folder, organize components by feature:
 
 ```
-/src/components
+/components
 ├── /ui                    # Basic UI components
 │   ├── /button
 │   ├── /modal
@@ -118,10 +80,19 @@ Within the /src/components folder, organize components by feature:
 
 ### State Management
 - Use Zustand for global state management
-- Implement proper state persistence with Tauri's fs API
-- Handle IPC state synchronization properly
+- Implement proper state persistence with AsyncStorage
+- Handle app state and background/foreground transitions properly
 
 ### Error Handling
-- Implement proper error boundaries in React
-- Use custom error types in Rust
-- Proper error propagation between Rust and JS
+- Implement proper error boundaries
+- Use custom error types
+- Proper error logging and monitoring
+- Handle offline scenarios gracefully
+
+### Mobile-Specific Considerations
+- Implement proper keyboard handling
+- Handle device orientation changes appropriately
+- Manage app lifecycle events
+- Implement proper deep linking
+- Handle platform-specific differences (iOS/Android)
+- Ensure proper permissions handling

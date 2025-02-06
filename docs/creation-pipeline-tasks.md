@@ -55,13 +55,6 @@ Tasks:
    - Add transaction replay capability
    - Add transaction serialization for project saves
 
-2. [ ] Processing Bridge
-   - Create Rust API for video operations
-   - Implement progress reporting
-   - Add operation cancellation
-   - Create preview generation
-   - Handle processing errors
-
 3. [ ] Basic Clip Operations
    - Create clip trim transaction
    - Add clip split transaction
