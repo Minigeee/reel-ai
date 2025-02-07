@@ -13,7 +13,7 @@ This document outlines the concrete implementation tasks for adding social featu
 These tasks cover building a minimal profile UI and integrating with the Supabase database.
 
 **Tasks:**
-1. [ ] **Profile Data & UI**
+1. [X] **Profile Data & UI**
    - Create a profile page that displays:
      - Username, display name, bio, and avatar (seeded using free online URLs).
    - Develop an edit form for profile updates with basic validation.
@@ -21,7 +21,7 @@ These tasks cover building a minimal profile UI and integrating with the Supabas
 2. [X] **Authentication & Routing**
    - Ensure that the profile page is accessible only to authenticated users.
    - Integrate with the existing auth system (Supabase) to fetch user details.
-3. [ ] **State Management & Data Fetching**
+3. [X] **State Management & Data Fetching**
    - Use React Query to fetch and cache the user profile data.
    - Handle loading and error states appropriately.
    - Update the global user state if using Zustand or a similar state management library.
@@ -47,16 +47,16 @@ These tasks enable users to like or unlike videos while updating the related UI 
 These tasks add the functionality for users to follow and unfollow other users.
 
 **Tasks:**
-1. [ ] **Database Operations for Following/Unfollowing**
+1. [X] **Database Operations for Following/Unfollowing**
    - Implement database methods to:
      - Insert new follow relationships into the `follows` table.
      - Delete follow relationships from the `follows` table.
    - Validate requests to prevent duplicate entries.
-2. [ ] **Follow/Unfollow Button Component**
+2. [X] **Follow/Unfollow Button Component**
    - Build a Follow/Unfollow button component for user profile pages.
    - Update the component's state based on whether the current user follows the profile.
    - Use React Query for optimistic updates, ensuring a seamless user experience.
-3. [ ] **Display Follower Counts**
+3. [X] **Display Follower Counts**
    - Update the profile UI to show follower and following counts.
    - Query these counts from the database and cache them. Ensure they update dynamically after follow actions.
 
@@ -64,9 +64,9 @@ These tasks add the functionality for users to follow and unfollow other users.
 Implement a search interface that allows users to discover videos and other user profiles.
 
 **Tasks:**
-1. [ ] **Search Database Integration**
+1. [X] **Search Database Integration**
    - Implement database queries for:
-     - Videos (search by title, description, category, and tags).
+     - Videos (search by title, description, filter by category and tags).
      - Users (search by username, display name, and bio).
    - Implement pagination and debouncing to optimize database queries.
 2. [ ] **Search UI with Tabs**

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { ActivityIndicator, ScrollView, View } from 'react-native';
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import { ActivityIndicator, Image, ScrollView, View } from 'react-native';
+import { Avatar, AvatarFallback } from '~/components/ui/avatar';
 import { useUser } from '../../lib/hooks/use-user';
 import { supabase } from '../../lib/supabase';
 import { Text } from '../ui/text';
@@ -18,20 +18,21 @@ export function UserProfile({ userId, isEditable }: UserProfileProps) {
   const { data: stats, isLoading: isLoadingStats } = useQuery({
     queryKey: ['user-stats', userId],
     queryFn: async () => {
-      const [{ count: followers }, { count: following }, { count: videos }] = await Promise.all([
-        supabase
-          .from('follows')
-          .select('*', { count: 'exact', head: true })
-          .eq('following_id', userId),
-        supabase
-          .from('follows')
-          .select('*', { count: 'exact', head: true })
-          .eq('follower_id', userId),
-        supabase
-          .from('videos')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', userId),
-      ]);
+      const [{ count: followers }, { count: following }, { count: videos }] =
+        await Promise.all([
+          supabase
+            .from('follows')
+            .select('*', { count: 'exact', head: true })
+            .eq('following_id', userId),
+          supabase
+            .from('follows')
+            .select('*', { count: 'exact', head: true })
+            .eq('follower_id', userId),
+          supabase
+            .from('videos')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId),
+        ]);
       return {
         followers: followers || 0,
         following: following || 0,
@@ -66,7 +67,7 @@ export function UserProfile({ userId, isEditable }: UserProfileProps) {
               className='h-20 w-20'
               alt={`${user.display_name || user.username}'s avatar`}
             >
-              <AvatarImage src={user.avatar_url ?? undefined} />
+              <Image source={{ uri: user.avatar_url ?? undefined }} />
               <AvatarFallback>
                 <Text className='text-xl text-muted-foreground'>
                   {(user.display_name || user.username)
@@ -105,9 +106,7 @@ export function UserProfile({ userId, isEditable }: UserProfileProps) {
             <Text className='text-sm text-muted-foreground'>Followers</Text>
           </View>
           <View className='flex-1 items-center'>
-            <Text className='text-lg font-bold'>
-              {stats?.following}
-            </Text>
+            <Text className='text-lg font-bold'>{stats?.following}</Text>
             <Text className='text-sm text-muted-foreground'>Following</Text>
           </View>
         </View>

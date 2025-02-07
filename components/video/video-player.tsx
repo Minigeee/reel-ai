@@ -1,5 +1,5 @@
 import { ResizeMode, Video } from 'expo-av';
-import { Heart, MessageCircle, Share2 } from 'lucide-react-native';
+import { Heart, MessageCircle, Play, Share2 } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import Animated, {
@@ -110,19 +110,7 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
               height: 50,
             }}
           >
-            <View
-              style={{
-                width: 0,
-                height: 0,
-                borderLeftWidth: 20,
-                borderLeftColor: 'white',
-                borderTopWidth: 12,
-                borderTopColor: 'transparent',
-                borderBottomWidth: 12,
-                borderBottomColor: 'transparent',
-                marginLeft: 5,
-              }}
-            />
+            <Play size={24} color='white' />
           </Animated.View>
         )}
       </Pressable>

@@ -1,9 +1,10 @@
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { SearchScreen } from '~/components/search/search-screen';
 
 export default function DiscoverScreen() {
   return (
-    <View className="flex-1 items-center justify-center">
-      <Text>Discover Screen</Text>
+    <View className='flex-1'>
+      <SearchScreen />
     </View>
   );
-} 
+}

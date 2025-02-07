@@ -6,7 +6,7 @@ import { VideoPlayer } from '~/components/video/video-player';
 import { useVideos } from '~/lib/queries/use-videos';
 
 const { height: WINDOW_HEIGHT } = Dimensions.get('window');
-const TAB_BAR_HEIGHT = 15;
+const TAB_BAR_HEIGHT = 8;
 
 export default function ReelsScreen() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useVideos();
