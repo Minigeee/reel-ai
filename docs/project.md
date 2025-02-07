@@ -2,114 +2,110 @@
 
 ## 1. Project Description / Summary
 
-Reel AI is a TikTok-style short video platform designed to revolutionize short-form video creation through AI-powered tools. While the platform will serve creators across various content categories, we're initially focusing on educational content creators to showcase the platform's powerful features. The app streamlines the video creation process by providing:
+Reel AI is a TikTok-style short video platform designed to revolutionize language learning through immersive, AI-enhanced content. The platform helps language learners discover and engage with native content while providing powerful tools for comprehension and learning. The app streamlines the language learning experience by providing:
 
-- Advanced video processing capabilities built directly into the app
-- AI-powered editing and enhancement features
-- Seamless content publishing and management
-- Focus on creator-side workflows and tools
+- AI-powered comprehension tools built directly into the video player
+- Smart subtitle and translation features
+- Personalized content discovery based on language level
+- Interactive learning features integrated with video content
 
 Key Benefits:
-- Reduced video editing time through AI assistance
-- Professional-quality results without extensive editing knowledge
-- Native processing capabilities without relying on external services
-- Streamlined creation-to-publishing pipeline
+- Natural language acquisition through native content
+- Real-world context and cultural immersion
+- Personalized difficulty levels and progression
+- Interactive learning tools integrated into entertainment content
+- Spaced repetition of vocabulary through related content
 
 ## 2. Target Users
 
-Primary Focus: Short-form Video Content Creators
-Initial Launch Focus: Educational Content Creators
+Primary Focus: Language Learners (Beginner to Advanced)
+Secondary Users: Content Creators making language learning content
 
-The platform will ultimately serve creators across multiple niches including entertainment, lifestyle, comedy, and more. For our initial release, we're showcasing the platform's capabilities through educational content creators.
-
-User Stories (Educational Content Focus - Initial Release):
-1. "As an educational content creator, I want to upload and edit videos directly in the app"
-2. "As an educational content creator, I want to add timestamps and chapters to my educational content"
-3. "As an educational content creator, I want to automatically generate captions for my videos"
-4. "As an educational content creator, I want to add visual effects and text overlays to emphasize key points"
-5. "As an educational content creator, I want to categorize my videos by subject and difficulty level"
-6. "As an educational content creator, I want to preview my content before publishing"
-
-Future User Stories Will Include:
-- Entertainment creators focusing on short skits
-- Lifestyle creators sharing quick tips and tutorials
-- Comedy creators needing quick editing tools
-- News creators requiring fast turnaround times
+User Stories:
+1. "As a language learner, I want to watch videos with dual subtitles (native + translation)"
+2. "As a language learner, I want to tap on words I don't know to see translations and save them"
+3. "As a language learner, I want to find content matching my proficiency level"
+4. "As a language learner, I want to practice pronunciation by repeating phrases from videos"
+5. "As a language learner, I want to see grammar explanations for sentences I don't understand"
+6. "As a language learner, I want to track my vocabulary acquisition through video watching"
+7. "As a content creator, I want to mark my content with language level and topics"
 
 ## 3. Project Requirements
 
 Week 1 Core Requirements:
-- Complete video upload → processing → publishing pipeline
-- Video processing features:
-  - Basic trimming and cutting
-  - Text overlay support
-  - Caption generation
-  - Basic filters and effects
-- Video categorization and tagging system
-- Preview and publishing workflow
+- Complete video playback system with learning features:
+  - Dual subtitle system
+  - Interactive word/phrase translation
+  - Vocabulary saving system
+  - Basic content recommendation engine
+- Language proficiency assessment system
+- Content categorization by language level and topic
 
 Week 2 AI Features:
-1. SmartEdit AI
-   - Automatic silence/pause detection and removal
-   - Smart text placement suggestions
-   - Automatic highlight generation for key moments
+1. ComprehensionAI
+   - Automatic content difficulty analysis
+   - Smart vocabulary tracking
+   - Grammar pattern recognition
+   - Pronunciation assessment
    
-2. ContentEnhance AI
-   - Automatic chapter/section detection
-   - Content difficulty analysis
-   - Automated tagging and categorization
+2. ContentMatchAI
+   - Personalized content recommendations
+   - Learning progress tracking
+   - Vocabulary retention analysis
+   - Related content suggestions based on learning goals
 
 ## 4. Core Features and Systems
 
-1. Video Processing System
-   - Native video processing engine (Rust-based)
-   - Effects and filters pipeline optimized for short-form content
-   - Text overlay system with TikTok-style dynamic text
-   - Video optimization engine for various platforms
+1. Video Learning System
+   - Interactive subtitle system
+   - Word/phrase translation engine
+   - Pronunciation practice tools
+   - Progress tracking and spaced repetition
 
 2. AI Enhancement System
-   - Video analysis engine
-   - Smart editing suggestions
-   - Content enhancement features
-   - Trending content analysis (future feature)
+   - Content difficulty analysis
+   - Grammar pattern recognition
+   - Pronunciation assessment
+   - Personalized learning paths
 
 3. Content Management System
-   - Video upload and storage
-   - Multi-category support (Education, Entertainment, Lifestyle, etc.)
-   - Smart tagging system
-   - Publishing workflow with platform-specific optimizations
+   - Content categorization by language and level
+   - Topic-based organization
+   - Smart tagging for language features
+   - Vocabulary and grammar point indexing
 
 4. User System
-   - Creator profiles with customizable niches
-   - Content dashboard
-   - Analytics with category-specific insights
+   - Learner profiles with language goals
+   - Progress dashboard
+   - Vocabulary lists and review system
+   - Learning analytics
 
 ## 5. Success Criteria
 
 Week 1 Success Metrics:
-- Implementation of all 6 user stories
-- Functional end-to-end video upload and publishing pipeline
-- Smooth video processing capabilities
-- Working categorization system
+- Implementation of all core learning features
+- Functional subtitle and translation system
+- Smooth video playback with interactive features
+- Working content discovery system
 
 Week 2 Success Metrics:
-- Implementation of 2 major AI features
-- At least 6 working AI-enhanced user stories
-- Demonstrable improvement in content creation workflow
-- Performance benchmarks for video processing
+- Implementation of AI-powered learning features
+- Personalized content recommendations
+- Demonstrable vocabulary retention tracking
+- Performance benchmarks for learning tools
 
 ## 6. Tech Stack
 
 Frontend:
-- React for web interface
-- Tauri for cross-platform deployment
+- React Native for mobile-first development
+- Expo for cross-platform deployment
 - TailwindCSS for styling
 
 Backend Processing:
-- Rust for video processing
-- FFmpeg for video manipulation
-- OpenCV for computer vision tasks
-- Custom Rust packages for specialized processing
+- Node.js for API services
+- FFmpeg for video processing
+- Natural Language Processing libraries
+- Custom language learning algorithms
 
 Cloud Services:
 - Supabase for backend services:
@@ -118,9 +114,10 @@ Cloud Services:
   - Storage
 
 AI/ML Services:
-- TensorFlow/PyTorch for AI models
-- Whisper API for speech-to-text
-- Custom ML models for video analysis
+- TensorFlow/PyTorch for ML models
+- OpenAI API for translations and analysis
+- Custom ML models for language difficulty assessment
+- Speech recognition APIs for pronunciation
 
 Development Tools:
 - Git for version control

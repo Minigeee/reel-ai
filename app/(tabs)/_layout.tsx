@@ -1,10 +1,23 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { Home, Plus, Search, Settings, User } from 'lucide-react-native';
 import { ThemeToggle } from '~/components/ThemeToggle';
+import { useAuth } from '~/lib/providers/auth-provider';
 import { useColorScheme } from '~/lib/useColorScheme';
 
 export default function TabsLayout() {
   const { isDarkColorScheme } = useColorScheme();
+  const { user, isLoading } = useAuth();
+
+  // Wait for auth to be initialized
+  if (isLoading) {
+    return null;
+  }
+
+  // Redirect to login if not authenticated
+  if (!user) {
+    console.log('redirecting to logimn')
+    return <Redirect href='/login' />;
+  }
 
   return (
     <Tabs
@@ -19,7 +32,7 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name='index'
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
@@ -36,7 +49,7 @@ export default function TabsLayout() {
         name='create'
         options={{
           title: 'Create',
-          tabBarIcon: ({ color, size }) => <Plus color={color} size={size} />,  
+          tabBarIcon: ({ color, size }) => <Plus color={color} size={size} />,
         }}
       />
       <Tabs.Screen

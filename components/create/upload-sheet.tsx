@@ -7,6 +7,7 @@ import { useCreatorStore } from '~/lib/stores/creator-store';
 import { supabase } from '~/lib/supabase';
 import { useState } from 'react';
 import * as FileSystem from 'expo-file-system';
+import * as VideoThumbnails from 'expo-video-thumbnails';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 
 interface UploadSheetProps {
@@ -28,17 +29,31 @@ export function UploadSheet({ isVisible, onClose }: UploadSheetProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!session || !user) return;
 
+      // Generate thumbnail
+      const { uri: thumbnailUri } = await VideoThumbnails.getThumbnailAsync(videoFile.uri, {
+        time: 0,
+        quality: 0.7,
+      });
+
       const fileExt = videoFile.uri.split('.').pop();
-      const filePath = `${user.id}/${Math.random()}.${fileExt}`;
+      const fileId = Math.random();
+      const filePath = `${user.id}/${fileId}.${fileExt}`;
+      const thumbnailPath = `${user.id}/${fileId}.jpg`;
 
-      // Get pre-signed URL for direct upload
-      const { data: signedUploadResult } = await supabase.storage
-        .from('videos')
-        .createSignedUploadUrl(filePath);
-      const signedUrl = signedUploadResult?.signedUrl;
-      const token = signedUploadResult?.token;
+      // Get pre-signed URLs for direct upload
+      const [videoSignedResult, thumbnailSignedResult] = await Promise.all([
+        supabase.storage.from('videos').createSignedUploadUrl(filePath),
+        supabase.storage.from('thumbnails').createSignedUploadUrl(thumbnailPath)
+      ]);
 
-      if (!signedUrl || !token) throw new Error('Failed to get upload URL');
+      const videoSignedUrl = videoSignedResult.data?.signedUrl;
+      const videoToken = videoSignedResult.data?.token;
+      const thumbnailSignedUrl = thumbnailSignedResult.data?.signedUrl;
+      const thumbnailToken = thumbnailSignedResult.data?.token;
+
+      if (!videoSignedUrl || !videoToken || !thumbnailSignedUrl || !thumbnailToken) {
+        throw new Error('Failed to get upload URLs');
+      }
 
       // Map ext to Content-Type
       const mimeTypes: Record<string, string> = {
@@ -55,23 +70,37 @@ export function UploadSheet({ isVisible, onClose }: UploadSheetProps) {
       };
       const contentType = mimeTypes[fileExt?.toLowerCase() ?? ''] || `video/${fileExt}`;
 
-      // Upload using FileSystem with progress tracking
-      const uploadResult = await FileSystem.uploadAsync(signedUrl, videoFile.uri, {
-        httpMethod: 'PUT',
-        uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
-        headers: {
-          'Content-Type': contentType,
-        },
-        sessionType: FileSystem.FileSystemSessionType.BACKGROUND,
-      });
+      // Upload video and thumbnail in parallel
+      const [videoUploadResult, thumbnailUploadResult] = await Promise.all([
+        FileSystem.uploadAsync(videoSignedUrl, videoFile.uri, {
+          httpMethod: 'PUT',
+          uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+          headers: {
+            'Content-Type': contentType,
+          },
+          sessionType: FileSystem.FileSystemSessionType.BACKGROUND,
+        }),
+        FileSystem.uploadAsync(thumbnailSignedUrl, thumbnailUri, {
+          httpMethod: 'PUT',
+          uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+          headers: {
+            'Content-Type': 'image/jpeg',
+          },
+          sessionType: FileSystem.FileSystemSessionType.BACKGROUND,
+        })
+      ]);
 
-      if (uploadResult.status !== 200) {
+      if (videoUploadResult.status !== 200 || thumbnailUploadResult.status !== 200) {
         throw new Error('Upload failed');
       }
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl: videoPublicUrl } } = supabase.storage
         .from('videos')
         .getPublicUrl(filePath);
+
+      const { data: { publicUrl: thumbnailPublicUrl } } = supabase.storage
+        .from('thumbnails')
+        .getPublicUrl(thumbnailPath);
 
       const { error: dbError } = await supabase
         .from('videos')
@@ -79,8 +108,10 @@ export function UploadSheet({ isVisible, onClose }: UploadSheetProps) {
           user_id: user.id,
           title: videoDetails.title,
           description: videoDetails.description,
-          video_url: publicUrl,
+          video_url: videoPublicUrl,
+          thumbnail_url: thumbnailPublicUrl,
           duration: videoFile.duration,
+          status: 'published',
         });
 
       if (dbError) throw dbError;

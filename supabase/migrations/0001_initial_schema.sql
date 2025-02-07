@@ -17,6 +17,7 @@ create type overlay_type as enum ('text', 'sticker', 'effect');
 -- Users table
 create table public.users (
     id uuid references auth.users primary key,
+    email text unique not null,
     username text unique not null,
     display_name text,
     avatar_url text,
@@ -68,6 +69,10 @@ create index videos_user_id_idx on public.videos(user_id);
 create index videos_status_idx on public.videos(status);
 create index videos_tags_gin_idx on public.videos using gin(tags);
 
+-- Create additional indexes for performance
+create index videos_published_at_idx on public.videos(published_at) where status = 'published';
+create index videos_category_idx on public.videos(category) where category is not null;
+
 -- Comments table
 create table public.comments (
     id uuid primary key default uuid_generate_v4(),
@@ -89,17 +94,6 @@ create table public.video_likes (
     user_id uuid references public.users(id) on delete cascade,
     created_at timestamptz default now(),
     primary key (video_id, user_id)
-);
-
--- User follows (junction table)
-create table public.follows (
-    follower_id uuid references public.users(id) on delete cascade,
-    following_id uuid references public.users(id) on delete cascade,
-    created_at timestamptz default now(),
-    primary key (follower_id, following_id),
-    
-    -- Prevent self-following
-    constraint no_self_follow check (follower_id != following_id)
 );
 
 -- Trigger function to update video metrics
@@ -154,6 +148,26 @@ begin
     return NEW;
 end;
 $$;
+
+-- Add trigger for published_at
+create or replace function public.update_video_published_at()
+returns trigger
+language plpgsql
+security definer
+as $$
+begin
+    if NEW.status = 'published' and OLD.status != 'published' then
+        NEW.published_at = now();
+    end if;
+    return NEW;
+end;
+$$;
+
+create trigger update_video_published_at
+before update on public.videos
+for each row
+when (NEW.status is distinct from OLD.status)
+execute function public.update_video_published_at();
 
 -- Create updated_at triggers
 create trigger update_users_updated_at

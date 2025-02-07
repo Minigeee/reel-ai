@@ -86,7 +86,7 @@ create table users (
   id uuid references auth.users primary key,
   username text unique not null,
   display_name text,
-  avatar_url text,
+  avatar_url text,  -- For the initial build, avatar URLs are seeded with free online sources
   bio text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -98,7 +98,7 @@ Relationships:
 - Many-to-many with other Users (follows)
 
 User Interaction:
-- Users can update their own profile
+- Users can update their own profile (minimal functionality in the initial build)
 - Users can view other users' profiles
 - Users can follow/unfollow other users
 
@@ -151,13 +151,13 @@ create table videos (
 
 Relationships:
 - Belongs to a User
-- One-to-many with Comments
-- Many-to-many with Users (likes)
+- One-to-many with Social Features (likes)
+- Videos information is used for video search
 
 User Interaction:
 - Creators can publish, edit, and delete their videos
-- Viewers can view, like, and comment on videos
-- Videos can be discovered through tags and categories
+- Viewers can view and like videos (commenting is out of scope for the initial build)
+- Videos can be discovered through tags, categories, and keyword searches
 
 Security Policies:
 - Read: Public access to published videos
@@ -170,29 +170,34 @@ Security Policies:
 
 Purpose: Handles social interactions between users and content.
 
-Description: These tables manage social features like likes, comments, and follows. They enable user engagement and content discovery through social interactions.
+Description: These tables manage social features like likes and follows, enabling user engagement and content discovery through social interactions. Note that comment functionality is not included in the initial build.
 
 Key Attributes:
+
+#### Likes
 ```
--- Likes
 create table video_likes (
   video_id uuid references videos(id) on delete cascade,
   user_id uuid references users(id) on delete cascade,
   created_at timestamptz default now(),
   primary key (video_id, user_id)
 );
+```
 
--- Comments
-create table comments (
-  id uuid primary key default uuid_generate_v4(),
-  video_id uuid references videos(id) on delete cascade,
-  user_id uuid references users(id) on delete cascade,
-  content text not null,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
-);
+Relationships:
+- Connects Users and Videos representing the "like" action
 
--- Follows
+User Interaction:
+- Users can like/unlike videos
+- Like counts on videos are updated based on this table
+
+Security Policies:
+- Read: Public access
+- Create/Delete: Authenticated users only
+- Update: Not allowed
+
+#### Follows
+```
 create table follows (
   follower_id uuid references users(id) on delete cascade,
   following_id uuid references users(id) on delete cascade,
@@ -202,26 +207,27 @@ create table follows (
 ```
 
 Relationships:
-- Links Users to Videos (likes)
-- Links Users to Users (follows)
-- Links Users to Videos (comments)
+- Connects Users to other Users to represent following relationships
 
 User Interaction:
-- Users can like/unlike videos
-- Users can follow/unfollow other users
-- Users can comment on videos
-- Users can view their social activity
+- Users can follow/unfollow other users to see their published content and updates
 
 Security Policies:
-- Likes:
-  - Read: Public access
-  - Create/Delete: Authenticated users only
-  - Update: Not allowed
-- Comments:
-  - Read: Public access
-  - Create: Authenticated users only
-  - Update/Delete: Comment owner only
-- Follows:
-  - Read: Public access
-  - Create/Delete: Authenticated users only
-  - Update: Not allowed 
+- Read: Public access
+- Create/Delete: Authenticated users only
+- Update: Not allowed
+
+### Search Considerations
+
+Purpose: Enables efficient searching for users and videos on the platform.
+
+Description: Both the Users and Videos tables contain indexed searchable fields. Search functionality will be implemented in two tabs: a Videos tab (default) and a Users tab.
+
+Key Considerations:
+- For Users: Searchable fields include username, display_name, and bio.
+- For Videos: Searchable fields include title, description, category, and tags.
+- Full-text search or external search integrations can be explored in future iterations.
+
+Security Policies:
+- Read: Public access
+- Create/Update: Not applicable (handled via primary data models) 

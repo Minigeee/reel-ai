@@ -1,0 +1,98 @@
+# Development Guidelines for Reel AI
+
+## Frontend Development
+
+### Code Style and Structure
+- Write concise, technical TypeScript code with accurate examples
+- Use functional and declarative programming patterns; avoid classes
+- Prefer iteration and modularization over code duplication
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError)
+- Structure files: exported component, subcomponents, helpers, static content, types
+
+### Naming Conventions
+- Components should go in src/components and be named like NewComponent.tsx
+- Use lowercase with dashes for directories (e.g., components/video-editor)
+- Favor named exports for components
+
+### TypeScript Usage
+- Use TypeScript for all frontend code; prefer interfaces over types
+- Avoid enums; use const maps instead
+- Use functional components with TypeScript interfaces
+- Ensure proper typing for API calls and events
+
+### UI and Styling
+- Design for mobile-first with touch-friendly UI elements (min 44px touch targets)
+- Use React Native Reusables (RNR) for native mobile components (import from `~/components/ui`)
+- Use lucide icons (import from `lucide-react-native`)
+- Ensure proper spacing for mobile viewports (16-24px margins)
+- Place key interactive elements in thumb-reachable zones
+- Use React Native Reanimated for performant mobile animations and gestures
+- Design loading states and skeleton screens for perceived performance
+- Use Tailwind CSS for styling
+
+### Performance Optimization
+- Optimize asset loading and bundling
+- Use lazy loading for heavy components
+- Implement proper loading states for async operations
+- Use proper image caching and optimization
+- Implement memory management best practices for video content
+
+### Data Querying
+- Use React Query (TanStack Query) for all data fetching and mutations
+- Implement proper query keys following the collection/entity/parameters pattern
+- Enable automatic background refetching with appropriate staleTime
+- Use optimistic updates for mutations when possible
+- Implement proper error handling and retry logic
+- Structure query hooks in dedicated files under features/queries
+
+## Project Structure
+
+```
+project-root/
+├── components/ # Reusable UI components
+│ ├── ui/ # Basic UI components
+│ ├── video/ # Video-related components
+│ └── editor/ # Editor components
+├── lib/ # Shared utilities
+├── types/ # TypeScript types
+├── app/ # Expo Router pages
+└── package.json
+```
+
+### Component Organization
+Within the /components folder, organize components by feature:
+
+```
+/components
+├── /ui                    # Basic UI components
+│   ├── /button
+│   ├── /modal
+│   └── /card
+├── /video                 # Video-related components
+│   ├── /player
+│   ├── /timeline
+│   └── /controls
+└── /editor               # Editor components
+    ├── /tools
+    ├── /effects
+    └── /export
+```
+
+### State Management
+- Use Zustand for global state management
+- Implement proper state persistence with AsyncStorage
+- Handle app state and background/foreground transitions properly
+
+### Error Handling
+- Implement proper error boundaries
+- Use custom error types
+- Proper error logging and monitoring
+- Handle offline scenarios gracefully
+
+### Mobile-Specific Considerations
+- Implement proper keyboard handling
+- Handle device orientation changes appropriately
+- Manage app lifecycle events
+- Implement proper deep linking
+- Handle platform-specific differences (iOS/Android)
+- Ensure proper permissions handling
