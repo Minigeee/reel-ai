@@ -15,7 +15,7 @@ export default function TabsLayout() {
 
   // Redirect to login if not authenticated
   if (!user) {
-    console.log('redirecting to logimn')
+    console.log('redirecting to logimn');
     return <Redirect href='/login' />;
   }
 
@@ -28,8 +28,9 @@ export default function TabsLayout() {
         },
         tabBarActiveTintColor: isDarkColorScheme ? '#fff' : '#000',
         tabBarInactiveTintColor: isDarkColorScheme ? '#71717a' : '#71717a',
-        headerRight: () => <ThemeToggle />,
       }}
+      initialRouteName='index'
+      backBehavior='history'
     >
       <Tabs.Screen
         name='index'
