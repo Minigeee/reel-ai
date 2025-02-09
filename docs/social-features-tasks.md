@@ -30,18 +30,15 @@ These tasks cover building a minimal profile UI and integrating with the Supabas
 These tasks enable users to like or unlike videos while updating the related UI immediately.
 
 **Tasks:**
-1. [ ] **Database Integration for Likes**
+1. [X] **Database Integration for Likes**
    - Implement database operations for:
      - Inserting new likes into the `video_likes` table.
      - Deleting likes from the `video_likes` table.
    - Ensure proper error handling for unique constraint violations.
-2. [ ] **Like Button Component**
+2. [X] **Like Button Component**
    - Create a reusable Like Button component to be placed on video detail pages.
    - Display both the like count (sourced from the Videos table) and whether the current user has liked the video.
    - Integrate React Query to perform optimistic updates when the like state changes.
-3. [ ] **UI Feedback and Error Handling**
-   - Display a spinner or loading state during the like/unlike operation.
-   - Show error messages if the database operation fails.
 
 ### 3. Follower System
 These tasks add the functionality for users to follow and unfollow other users.
@@ -69,12 +66,12 @@ Implement a search interface that allows users to discover videos and other user
      - Videos (search by title, description, filter by category and tags).
      - Users (search by username, display name, and bio).
    - Implement pagination and debouncing to optimize database queries.
-2. [ ] **Search UI with Tabs**
+2. [X] **Search UI with Tabs**
    - Design a mobile-friendly search interface that includes:
      - A default **Videos** tab displaying video results.
      - A **Users** tab for showing user profiles.
    - Build a single search input component that applies debouncing to reduce rapid database queries.
-3. [ ] **Results Display & Error Handling**
+3. [X] **Results Display & Error Handling**
    - Render search results with clear loading indicators and error messages.
    - Ensure consistent styling across both tabs using Tailwind CSS.
    - Integrate React Query to manage asynchronous data fetching and caching.

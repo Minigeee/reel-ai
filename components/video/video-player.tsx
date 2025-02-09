@@ -1,6 +1,6 @@
 import { ResizeMode, Video } from 'expo-av';
 import { Heart, MessageCircle, Play, Share2 } from 'lucide-react-native';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Button } from '~/components/ui/button';
 import type { Tables } from '~/lib/database.types';
-import { getStorageUrl } from '~/lib/utils/get-storage-url';
+import { useLikeVideo } from '~/lib/hooks/use-like-video';
 
 interface VideoPlayerProps {
   video: Tables<'videos'> & {
@@ -33,6 +33,8 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
   const videoRef = useRef<Video>(null);
   const hideTimeout = useRef<NodeJS.Timeout>();
   const scale = useSharedValue(1);
+
+  const likeMutation = useLikeVideo();
 
   useEffect(() => {
     if (hideTimeout.current) {
@@ -81,6 +83,8 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
 
     setIsLiked((prev) => !prev);
     setLocalLikeCount((prev) => prev + (isLiked ? -1 : 1));
+
+    likeMutation.mutate(video.id);
   };
 
   const animatedStyle = useAnimatedStyle(() => ({

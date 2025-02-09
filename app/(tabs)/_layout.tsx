@@ -74,6 +74,13 @@ export default function TabsLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name='video/[id]'
+        options={{
+          title: 'Video',
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

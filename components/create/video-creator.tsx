@@ -1,6 +1,6 @@
 import Slider from '@react-native-community/slider';
 import { VideoView, useVideoPlayer } from 'expo-video';
-import { Filter, Image, Play, Upload, X } from 'lucide-react-native';
+import { Image, Play, Upload, WandSparkles, X } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useCreatorStore } from '~/lib/stores/creator-store';
@@ -92,13 +92,22 @@ export function VideoCreator({ onClose }: VideoCreatorProps) {
 
       {/* Action Buttons */}
       <View style={styles.actionButtons} className='bg-black/50'>
-        <TouchableOpacity onPress={() => setShowSelectSheet(true)} className='p-4'>
+        <TouchableOpacity
+          onPress={() => setShowSelectSheet(true)}
+          className='p-4'
+        >
           <Image size={24} color='white' />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setShowFiltersSheet(true)} className='p-4'>
-          <Filter size={24} color='white' />
+        <TouchableOpacity
+          onPress={() => setShowFiltersSheet(true)}
+          className='p-4'
+        >
+          <WandSparkles size={24} color='white' />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setShowUploadSheet(true)} className='p-4'>
+        <TouchableOpacity
+          onPress={() => setShowUploadSheet(true)}
+          className='p-4'
+        >
           <Upload size={24} color='white' />
         </TouchableOpacity>
       </View>

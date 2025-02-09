@@ -13,6 +13,7 @@ $$;
 -- Enum types for better data consistency
 create type video_status as enum ('draft', 'published', 'processing', 'failed');
 create type overlay_type as enum ('text', 'sticker', 'effect');
+create type language_level as enum ('a1', 'a2', 'b1', 'b2', 'c1', 'c2');
 
 -- Users table
 create table public.users (
@@ -38,6 +39,8 @@ create table public.videos (
     title text not null,
     description text,
     duration integer not null check (duration > 0),
+    language text not null default 'en',
+    difficulty language_level,
     
     -- Media URLs (stored in bucket)
     video_url text not null,

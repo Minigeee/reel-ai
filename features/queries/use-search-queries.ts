@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '~/lib/supabase';
-import type { Database } from '~/lib/database.types';
+import type { Database, Enums } from '~/lib/database.types';
 
 type Video = Database['public']['Tables']['videos']['Row'];
 type User = Database['public']['Tables']['users']['Row'];
@@ -10,11 +10,17 @@ interface SearchResult<T> {
   nextPage: number | null;
 }
 
+interface VideoSearchFilters {
+  query: string;
+  language?: string;
+  difficulty?: string;
+}
+
 const ITEMS_PER_PAGE = 20;
 
-export const useVideoSearch = (query: string) => {
+export const useVideoSearch = ({ query, language, difficulty }: VideoSearchFilters) => {
   return useInfiniteQuery({
-    queryKey: ['video-search', query],
+    queryKey: ['video-search', query, language, difficulty],
     queryFn: async ({ pageParam = 0 }) => {
       const start = pageParam * ITEMS_PER_PAGE;
       const end = start + ITEMS_PER_PAGE - 1;
@@ -32,8 +38,15 @@ export const useVideoSearch = (query: string) => {
         queryBuilder = queryBuilder.or(`title.ilike.%${query}%,description.ilike.%${query}%`);
       }
 
+      if (language) {
+        queryBuilder = queryBuilder.eq('language', language);
+      }
+
+      if (difficulty) {
+        queryBuilder = queryBuilder.eq('difficulty', difficulty as Enums<'language_level'>);
+      }
+
       const { data, error } = await queryBuilder;
-      console.log('query', query, data, error)
 
       if (error || !data) { throw error ?? new Error('No data returned'); }
 

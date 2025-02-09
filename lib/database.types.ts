@@ -115,6 +115,7 @@ export type Database = {
           bio: string | null
           created_at: string | null
           display_name: string | null
+          email: string
           id: string
           updated_at: string | null
           username: string
@@ -124,6 +125,7 @@ export type Database = {
           bio?: string | null
           created_at?: string | null
           display_name?: string | null
+          email: string
           id: string
           updated_at?: string | null
           username: string
@@ -133,6 +135,7 @@ export type Database = {
           bio?: string | null
           created_at?: string | null
           display_name?: string | null
+          email?: string
           id?: string
           updated_at?: string | null
           username?: string
@@ -178,9 +181,11 @@ export type Database = {
           comment_count: number | null
           created_at: string | null
           description: string | null
+          difficulty: Database["public"]["Enums"]["language_level"] | null
           duration: number
           enhancements: Json | null
           id: string
+          language: string
           like_count: number | null
           published_at: string | null
           status: Database["public"]["Enums"]["video_status"] | null
@@ -197,9 +202,11 @@ export type Database = {
           comment_count?: number | null
           created_at?: string | null
           description?: string | null
+          difficulty?: Database["public"]["Enums"]["language_level"] | null
           duration: number
           enhancements?: Json | null
           id?: string
+          language?: string
           like_count?: number | null
           published_at?: string | null
           status?: Database["public"]["Enums"]["video_status"] | null
@@ -216,9 +223,11 @@ export type Database = {
           comment_count?: number | null
           created_at?: string | null
           description?: string | null
+          difficulty?: Database["public"]["Enums"]["language_level"] | null
           duration?: number
           enhancements?: Json | null
           id?: string
+          language?: string
           like_count?: number | null
           published_at?: string | null
           status?: Database["public"]["Enums"]["video_status"] | null
@@ -249,6 +258,18 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_follower_count: {
+        Args: {
+          user_id: string
+        }
+        Returns: number
+      }
+      get_following_count: {
+        Args: {
+          user_id: string
+        }
+        Returns: number
+      }
       is_comment_owner: {
         Args: {
           comment_id: string
@@ -261,12 +282,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      toggle_follow: {
-        Args: {
-          target_user_id: string
-        }
-        Returns: undefined
-      }
       toggle_video_like: {
         Args: {
           video_id: string
@@ -275,6 +290,7 @@ export type Database = {
       }
     }
     Enums: {
+      language_level: "a1" | "a2" | "b1" | "b2" | "c1" | "c2"
       overlay_type: "text" | "sticker" | "effect"
       video_status: "draft" | "published" | "processing" | "failed"
     }

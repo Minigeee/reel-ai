@@ -16,7 +16,7 @@
     "db:stop": "npx supabase stop",
     "db:reset": "npx supabase db reset",
     "db:push": "npx supabase db push",
-    "db:types": "npx supabase gen types typescript --local > src/lib/database.types.ts",
+    "db:types": "npx supabase gen types typescript --local > lib/database.types.ts",
     "db:new": "npx supabase migration new",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md,mdx}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md,mdx}\" --cache"
@@ -29,6 +29,7 @@
     "@rn-primitives/avatar": "~1.1.0",
     "@rn-primitives/portal": "~1.1.0",
     "@rn-primitives/progress": "~1.1.0",
+    "@rn-primitives/select": "^1.1.0",
     "@rn-primitives/slot": "~1.1.0",
     "@rn-primitives/tooltip": "~1.1.0",
     "@rn-primitives/types": "~1.1.0",

@@ -10,11 +10,19 @@ import {
   View,
 } from 'react-native';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select';
+import {
   useUserSearch,
   useVideoSearch,
 } from '~/features/queries/use-search-queries';
 import { useDebounce } from '~/hooks/use-debounce';
 import type { Tables } from '~/lib/database.types';
+import { iconWithClassName } from '~/lib/icons/iconWithClassName';
 import { cn } from '~/lib/utils';
 
 const tabs = [
@@ -22,7 +30,30 @@ const tabs = [
   { id: 'users', label: 'Users' },
 ] as const;
 
+const languages = [
+  { value: '', label: 'All Languages' },
+  { value: 'en', label: 'English' },
+  { value: 'es', label: 'Spanish' },
+  { value: 'fr', label: 'French' },
+  { value: 'de', label: 'German' },
+  { value: 'zh', label: 'Chinese' },
+  { value: 'ja', label: 'Japanese' },
+  { value: 'ko', label: 'Korean' },
+];
+
+const difficulties = [
+  { value: '', label: 'All Levels' },
+  { value: 'a1', label: 'Beginner (A1)' },
+  { value: 'a2', label: 'Elementary (A2)' },
+  { value: 'b1', label: 'Intermediate (B1)' },
+  { value: 'b2', label: 'Upper Intermediate (B2)' },
+  { value: 'c1', label: 'Advanced (C1)' },
+  { value: 'c2', label: 'Mastery (C2)' },
+];
+
 type User = Tables<'users'>;
+
+iconWithClassName(Search);
 
 function TabBar({
   activeTab,
@@ -83,9 +114,16 @@ function UserCard({ user }: { user: User }) {
 }
 
 export function SearchScreen() {
+  const router = useRouter();
   const [activeTab, setActiveTab] =
     useState<(typeof tabs)[number]['id']>('videos');
   const [searchQuery, setSearchQuery] = useState('');
+  const [language, setLanguage] = useState<
+    { label: string; value: string } | undefined
+  >(undefined);
+  const [difficulty, setDifficulty] = useState<
+    { label: string; value: string } | undefined
+  >(undefined);
   const debouncedQuery = useDebounce(searchQuery, 300);
 
   const {
@@ -93,7 +131,11 @@ export function SearchScreen() {
     fetchNextPage: fetchNextVideos,
     hasNextPage: hasMoreVideos,
     isLoading: isLoadingVideos,
-  } = useVideoSearch(debouncedQuery);
+  } = useVideoSearch({
+    query: debouncedQuery,
+    language: language?.value,
+    difficulty: difficulty?.value,
+  });
 
   const {
     data: userPages,
@@ -116,70 +158,107 @@ export function SearchScreen() {
   return (
     <View className='flex-1 bg-background'>
       <View className='border-b border-border p-4'>
-        <View className='flex-row items-center space-x-2 rounded-lg bg-muted px-3 py-2'>
-          <Search size={20} className='text-foreground' />
+        <View className='flex-row items-center gap-3 rounded-lg bg-muted px-4 py-1'>
+          <Search size={20} className='text-muted-foreground' />
           <TextInput
             className='flex-1 text-base text-foreground'
-            placeholder='Search videos or users...'
+            placeholder='Search'
+            placeholderTextColor='#666'
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor='#666'
           />
         </View>
+        {activeTab === 'videos' && (
+          <View className='mt-4 flex-row gap-3'>
+            <View className='flex-1'>
+              <Select value={language} onValueChange={setLanguage}>
+                <SelectTrigger>
+                  <SelectValue placeholder='Select language' />
+                </SelectTrigger>
+                <SelectContent>
+                  {languages.map((lang) => (
+                    <SelectItem
+                      key={lang.value}
+                      label={lang.label}
+                      value={lang.value}
+                    >
+                      {lang.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </View>
+            <View className='flex-1'>
+              <Select value={difficulty} onValueChange={setDifficulty}>
+                <SelectTrigger>
+                  <SelectValue placeholder='Select difficulty' />
+                </SelectTrigger>
+                <SelectContent>
+                  {difficulties.map((level) => (
+                    <SelectItem
+                      key={level.value}
+                      label={level.label}
+                      value={level.value}
+                    >
+                      {level.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </View>
+          </View>
+        )}
       </View>
 
       <TabBar activeTab={activeTab} onTabPress={setActiveTab} />
 
       {activeTab === 'videos' ? (
         <FlatList
-          key={2}
-          numColumns={2}
           data={videos}
-          className='flex-1 p-2'
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.5}
-          ListEmptyComponent={
-            isLoadingVideos ? (
-              <Text className='p-4 text-center text-muted-foreground'>
-                Loading videos...
-              </Text>
-            ) : (
-              <Text className='p-4 text-center text-muted-foreground'>
-                No videos found
-              </Text>
-            )
-          }
+          className='p-5'
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Pressable
-              className='m-2 flex-1 overflow-hidden rounded-lg border border-border bg-card'
-              style={{ maxWidth: '50%' }}
+              className='my-2 rounded-lg border border-border bg-card overflow-hidden'
+              onPress={() => router.push(`/(tabs)/video/${item.id}`)}
             >
-              {item.thumbnail_url && (
-                <Image
-                  source={{ uri: item.thumbnail_url ?? undefined }}
-                  className='aspect-square w-full'
-                  resizeMode='cover'
-                />
-              )}
-              {!item.thumbnail_url && (
-                <View className='aspect-square w-full bg-black' />
-              )}
-              <View className='p-2'>
-                <Text
-                  className='text-sm font-medium text-foreground'
-                  numberOfLines={2}
-                >
+              <Image
+                source={{
+                  uri: item.thumbnail_url ?? 'https://via.placeholder.com/320x180?text=No+Thumbnail',
+                }}
+                className='w-full h-44'
+                resizeMode='cover'
+              />
+              <View className='p-4'>
+                <Text className='text-base font-medium text-foreground'>
                   {item.title}
                 </Text>
-                <Text
-                  className='text-xs text-muted-foreground'
-                  numberOfLines={1}
-                >
-                  @{item.user.display_name ?? item.user.username}
+                <Text className='mt-1 text-sm text-muted-foreground'>
+                  {item.description}
                 </Text>
+                <View className='mt-2 flex-row items-center gap-2'>
+                  <Image
+                    source={{
+                      uri:
+                        item.user.avatar_url ??
+                        'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+                    }}
+                    className='h-6 w-6 rounded-full'
+                  />
+                  <Text className='text-sm text-muted-foreground'>
+                    {item.user.display_name ?? item.user.username}
+                  </Text>
+                </View>
               </View>
             </Pressable>
           )}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          ListEmptyComponent={
+            <Text className='p-4 text-center text-muted-foreground'>
+              {isLoadingVideos ? 'Loading...' : 'No videos found'}
+            </Text>
+          }
         />
       ) : (
         <FlatList

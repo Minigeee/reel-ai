@@ -127,6 +127,30 @@ const styles = StyleSheet.create({
 
 ```
 
+## Video Upload
+
+### Required Fields
+- `title`: Video title (required)
+- `language`: Language of the content (required)
+  - Available options: English (en), Spanish (es), French (fr), German (de), Italian (it), Portuguese (pt), Chinese (zh), Japanese (ja), Korean (ko)
+- `difficulty`: Content difficulty level (optional)
+  - Based on CEFR levels: A1 (Beginner), A2 (Elementary), B1 (Intermediate), B2 (Upper Intermediate), C1 (Advanced), C2 (Mastery)
+
+### Example Usage
+
+```typescript
+import { useCreatorStore } from '~/lib/stores/creator-store';
+
+// Setting video details
+const { setVideoDetails } = useCreatorStore();
+setVideoDetails({
+  title: 'Basic Greetings in Spanish',
+  language: 'es',
+  difficulty: 'a1',
+  description: 'Learn common Spanish greetings for beginners'
+});
+```
+
 ## API Reference
 
 ### Data Fetching Hooks

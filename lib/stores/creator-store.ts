@@ -8,6 +8,14 @@ interface VideoFile {
 interface VideoDetails {
   title: string;
   description: string;
+  language: {
+    label: string;
+    value: string;
+  };
+  difficulty?: {
+    label: string;
+    value: string;
+  };
 }
 
 interface CreatorStore {
@@ -23,6 +31,11 @@ export const useCreatorStore = create<CreatorStore>((set) => ({
   videoDetails: {
     title: '',
     description: '',
+    language: {
+      label: 'English',
+      value: 'en',
+    },
+    difficulty: undefined,
   },
   setVideoFile: (file) => set({ videoFile: file }),
   setVideoDetails: (details) =>
@@ -35,6 +48,11 @@ export const useCreatorStore = create<CreatorStore>((set) => ({
       videoDetails: {
         title: '',
         description: '',
+        language: {
+          label: 'English',
+          value: 'en',
+        },
+        difficulty: undefined,
       },
     }),
 }));

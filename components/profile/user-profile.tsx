@@ -94,13 +94,13 @@ export function UserProfile({ userId, isEditable }: UserProfileProps) {
         {/* Stats */}
         <View className='mb-8 flex-row rounded-lg bg-muted p-4'>
           <View className='flex-1 items-center'>
-            <Text className='text-lg font-bold text-muted-foreground'>
+            <Text className='text-lg font-bold'>
               {stats?.videos}
             </Text>
             <Text className='text-sm text-muted-foreground'>Videos</Text>
           </View>
           <View className='flex-1 items-center'>
-            <Text className='text-lg font-bold text-muted-foreground'>
+            <Text className='text-lg font-bold'>
               {stats?.followers}
             </Text>
             <Text className='text-sm text-muted-foreground'>Followers</Text>

@@ -25,7 +25,7 @@ export default function UserProfileScreen() {
             onPress={() => router.back()}
             className='mr-4'
           >
-            <ArrowLeft className='h-4 w-4 text-foreground' />
+            <ArrowLeft className='h-4 w-4' />
           </Button>
           <Text className='text-lg font-semibold'>
             {isLoading ? 'Loading...' : user?.username}
