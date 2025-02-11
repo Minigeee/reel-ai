@@ -1,0 +1,14 @@
+{
+  "name": "reel-ai-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.3",
+    "dotenv": "^16.4.1",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  },
+  "scripts": {
+    "populate-jp": "ts-node populate-jp-dictionary.ts"
+  }
+}

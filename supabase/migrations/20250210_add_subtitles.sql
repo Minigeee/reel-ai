@@ -47,14 +47,12 @@ begin
   
   -- Call edge function via webhook
   perform net.http_post(
-    'http://127.0.0.1:4000/api/generate/subtitles',
-    jsonb_build_object(
+    url:='http://host.docker.internal:4000/api/subtitles/generate',
+    body:=jsonb_build_object(
       'video_id', NEW.id,
       'video_url', NEW.video_url,
-      'language', NEW.language
-    )::jsonb,
-    jsonb_build_object(
-      'Content-Type', 'application/json'
+      'language', NEW.language,
+      'description', NEW.description
     )::jsonb
   );
 

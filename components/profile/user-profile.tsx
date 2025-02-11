@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { ActivityIndicator, Image, ScrollView, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, View, RefreshControl } from 'react-native';
 import { Avatar, AvatarFallback } from '~/components/ui/avatar';
 import { useUser } from '../../lib/hooks/use-user';
 import { supabase } from '../../lib/supabase';
 import { Text } from '../ui/text';
 import { VideoList } from '../video/video-list';
 import { FollowButton } from './follow-button';
+import { useCallback } from 'react';
 
 interface UserProfileProps {
   userId: string;
@@ -13,9 +14,14 @@ interface UserProfileProps {
 }
 
 export function UserProfile({ userId, isEditable }: UserProfileProps) {
-  const { data: user, isLoading: isLoadingUser } = useUser(userId);
+  const { data: user, isLoading: isLoadingUser, refetch: refetchUser, isRefetching: isRefetchingUser } = useUser(userId);
 
-  const { data: stats, isLoading: isLoadingStats } = useQuery({
+  const { 
+    data: stats, 
+    isLoading: isLoadingStats, 
+    refetch: refetchStats,
+    isRefetching: isRefetchingStats 
+  } = useQuery({
     queryKey: ['user-stats', userId],
     queryFn: async () => {
       const [{ count: followers }, { count: following }, { count: videos }] =
@@ -41,6 +47,13 @@ export function UserProfile({ userId, isEditable }: UserProfileProps) {
     },
   });
 
+  const handleRefresh = useCallback(() => {
+    refetchUser();
+    refetchStats();
+  }, [refetchUser, refetchStats]);
+
+  const isRefreshing = isRefetchingUser || isRefetchingStats;
+
   if (isLoadingUser || isLoadingStats) {
     return (
       <View className='flex-1 items-center justify-center'>
@@ -58,7 +71,16 @@ export function UserProfile({ userId, isEditable }: UserProfileProps) {
   }
 
   return (
-    <ScrollView className='flex-1'>
+    <ScrollView 
+      className='flex-1'
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={handleRefresh}
+          tintColor="#666"
+        />
+      }
+    >
       <View className='p-4'>
         {/* Header */}
         <View className='mb-6 flex-row items-center justify-between'>

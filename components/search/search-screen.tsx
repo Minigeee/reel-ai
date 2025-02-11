@@ -8,6 +8,7 @@ import {
   Text,
   TextInput,
   View,
+  RefreshControl,
 } from 'react-native';
 import {
   Select,
@@ -131,6 +132,8 @@ export function SearchScreen() {
     fetchNextPage: fetchNextVideos,
     hasNextPage: hasMoreVideos,
     isLoading: isLoadingVideos,
+    refetch: refetchVideos,
+    isRefetching: isRefetchingVideos,
   } = useVideoSearch({
     query: debouncedQuery,
     language: language?.value,
@@ -142,6 +145,8 @@ export function SearchScreen() {
     fetchNextPage: fetchNextUsers,
     hasNextPage: hasMoreUsers,
     isLoading: isLoadingUsers,
+    refetch: refetchUsers,
+    isRefetching: isRefetchingUsers,
   } = useUserSearch(debouncedQuery);
 
   const videos = videoPages?.pages.flatMap((page) => page.data) ?? [];
@@ -217,6 +222,13 @@ export function SearchScreen() {
           data={videos}
           className='p-5'
           keyExtractor={(item) => item.id}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetchingVideos}
+              onRefresh={refetchVideos}
+              tintColor="#666"
+            />
+          }
           renderItem={({ item }) => (
             <Pressable
               className='my-2 rounded-lg border border-border bg-card overflow-hidden'
@@ -266,6 +278,13 @@ export function SearchScreen() {
           numColumns={1}
           data={users}
           className='flex-1'
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetchingUsers}
+              onRefresh={refetchUsers}
+              tintColor="#666"
+            />
+          }
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
           ListEmptyComponent={

@@ -76,6 +76,42 @@ export type Database = {
           },
         ]
       }
+      dictionary: {
+        Row: {
+          created_at: string | null
+          definitions: Json
+          extra: Json | null
+          id: string
+          language: string
+          metadata: Json | null
+          part_of_speech: string
+          updated_at: string | null
+          word: string
+        }
+        Insert: {
+          created_at?: string | null
+          definitions: Json
+          extra?: Json | null
+          id?: string
+          language: string
+          metadata?: Json | null
+          part_of_speech: string
+          updated_at?: string | null
+          word: string
+        }
+        Update: {
+          created_at?: string | null
+          definitions?: Json
+          extra?: Json | null
+          id?: string
+          language?: string
+          metadata?: Json | null
+          part_of_speech?: string
+          updated_at?: string | null
+          word?: string
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string | null
@@ -105,6 +141,47 @@ export type Database = {
             columns: ["following_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subtitles: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          language: string
+          segments: Json | null
+          status: Database["public"]["Enums"]["subtitle_status"]
+          updated_at: string
+          video_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          language?: string
+          segments?: Json | null
+          status?: Database["public"]["Enums"]["subtitle_status"]
+          updated_at?: string
+          video_id: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          language?: string
+          segments?: Json | null
+          status?: Database["public"]["Enums"]["subtitle_status"]
+          updated_at?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subtitles_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
             referencedColumns: ["id"]
           },
         ]
@@ -292,6 +369,7 @@ export type Database = {
     Enums: {
       language_level: "a1" | "a2" | "b1" | "b2" | "c1" | "c2"
       overlay_type: "text" | "sticker" | "effect"
+      subtitle_status: "pending" | "processing" | "completed" | "error"
       video_status: "draft" | "published" | "processing" | "failed"
     }
     CompositeTypes: {

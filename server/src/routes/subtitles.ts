@@ -12,7 +12,8 @@ const router = Router();
 router.post('/generate', async (req, res) => {
   try {
     const payload: RequestPayload = req.body;
-    const { video_id, video_url, language } = payload;
+    const { video_id, video_url, language, description } = payload;
+    console.log('generating subtitles for', video_url);
 
     // Initialize Supabase client
     const supabase = createClient(
@@ -24,10 +25,12 @@ router.post('/generate', async (req, res) => {
     await updateSubtitleStatus(supabase, video_id, language, 'processing');
 
     // Extract audio from video and get the file path
+    console.log('extracting audio');
     const audioPath = await extractAudio(video_url);
 
     // Transcribe audio using Whisper API
-    const whisperResponse = await transcribeAudio(audioPath);
+    console.log('transcribing audio');
+    const whisperResponse = await transcribeAudio(audioPath, description);
 
     // Update subtitles with completed status and segments
     await updateSubtitleStatus(
@@ -38,6 +41,7 @@ router.post('/generate', async (req, res) => {
       whisperResponse.segments
     );
 
+    console.log('completed generating subtitles');
     res.json({ status: 'success', data: whisperResponse });
   } catch (error) {
     console.error('Error generating subtitles:', error);

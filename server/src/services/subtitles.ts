@@ -1,13 +1,12 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import ffmpeg from 'fluent-ffmpeg';
-import FormData from 'form-data';
 import { createReadStream, createWriteStream } from 'fs';
 import { unlink } from 'fs/promises';
 import fetch from 'node-fetch';
+import OpenAI from 'openai';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { pipeline } from 'stream/promises';
-import OpenAI from 'openai';
 import {
   SubtitleStatus,
   WhisperResponse,
@@ -51,7 +50,8 @@ export async function extractAudio(videoUrl: string): Promise<string> {
 }
 
 export async function transcribeAudio(
-  audioPath: string
+  audioPath: string,
+  description?: string
 ): Promise<WhisperResponse> {
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -62,6 +62,7 @@ export async function transcribeAudio(
       file: createReadStream(audioPath),
       model: 'whisper-1',
       response_format: 'verbose_json',
+      prompt: description,
     });
 
     // Clean up the audio file after transcription

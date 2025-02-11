@@ -78,7 +78,7 @@ export function VideoCreator({ onClose }: VideoCreatorProps) {
         <VideoView
           style={styles.video}
           player={player}
-          contentFit='cover'
+          contentFit='contain'
           nativeControls={false}
         />
         <Pressable style={styles.videoOverlay} onPress={togglePlayback}>
