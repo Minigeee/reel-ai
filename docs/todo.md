@@ -2,7 +2,8 @@
 - [X] Improve video component (move shit to top, leave bottom area for subtitles and language features)
 - [X] Pop up dictionary
 - [X] AI chat integration
-- [ ] Add playback controls
+- [X] Add playback controls
+- [ ] Comment system
 - [ ] English translation
 - [ ] Flashcard word bank
 

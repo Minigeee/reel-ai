@@ -102,7 +102,7 @@ function UserCard({ user }: { user: User }) {
             user.avatar_url ??
             'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
         }}
-        className='h-12 w-12 rounded-full'
+        className='h-12 w-12 rounded-full bg-muted'
       />
       <View className='flex-1'>
         <Text className='text-base font-medium text-foreground'>

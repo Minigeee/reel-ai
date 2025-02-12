@@ -1,7 +1,13 @@
-import { ResizeMode, Video } from 'expo-av';
-import { Heart, MessageCircle, MoreVertical, Play, Share2 } from 'lucide-react-native';
+import { useQuery } from '@tanstack/react-query';
+import { VideoView, useVideoPlayer } from 'expo-video';
+import {
+  Heart,
+  MessageCircle,
+  MoreVertical,
+  Share2,
+} from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -11,12 +17,12 @@ import Animated, {
 import { Button } from '~/components/ui/button';
 import type { Tables } from '~/lib/database.types';
 import { useLikeVideo } from '~/lib/hooks/use-like-video';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '~/lib/supabase';
-import { TabbedPanel } from './language-learning/tabbed-panel';
-import { DictionaryPopup } from './language-learning/dictionary-popup';
-import { DescriptionSheet } from './language-learning/description-sheet';
 import { iconWithClassName } from '~/lib/icons/iconWithClassName';
+import { supabase } from '~/lib/supabase';
+import { CommentSheet } from './comments/comment-sheet';
+import { DescriptionSheet } from './language-learning/description-sheet';
+import { DictionaryPopup } from './language-learning/dictionary-popup';
+import { TabbedPanel } from './language-learning/tabbed-panel';
 
 iconWithClassName(Heart);
 iconWithClassName(MessageCircle);
@@ -51,11 +57,22 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
   const [localLikeCount, setLocalLikeCount] = useState(video.like_count ?? 0);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentSubtitle, setCurrentSubtitle] = useState<string>('');
-  const videoRef = useRef<Video>(null);
+  const [showDescription, setShowDescription] = useState(false);
+  const [showComments, setShowComments] = useState(false);
   const hideTimeout = useRef<NodeJS.Timeout>();
   const scale = useSharedValue(1);
 
   const likeMutation = useLikeVideo();
+
+  const player = useVideoPlayer(video.video_url, (player) => {
+    player.timeUpdateEventInterval = 0.25;
+    
+    // Add progress listener
+    player.addListener('timeUpdate', (event) => {
+      if (!player.playing) return;
+      setCurrentTime(event.currentTime);
+    });
+  });
 
   // Fetch subtitles for the video
   const { data: subtitles } = useQuery({
@@ -78,22 +95,11 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
     if (!subtitles) return;
 
     const currentSegment = subtitles.find(
-      segment => currentTime >= segment.start && currentTime <= segment.end
+      (segment) => currentTime >= segment.start && currentTime <= segment.end
     );
 
     setCurrentSubtitle(currentSegment?.text ?? '');
   }, [currentTime, subtitles]);
-
-  // Handle video playback status updates
-  const onPlaybackStatusUpdate = (status: any) => {
-    // console.log('update', status.positionMillis)
-    if (status?.isPlaying !== undefined) {
-      setIsPlaying(status.isPlaying);
-    }
-    if (status?.positionMillis !== undefined) {
-      setCurrentTime(status.positionMillis / 1000); // Convert to seconds
-    }
-  };
 
   useEffect(() => {
     if (hideTimeout.current) {
@@ -117,22 +123,14 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
 
   useEffect(() => {
     if (isActive) {
+      player?.play();
       setIsPlaying(true);
       setShowControls(true);
     } else {
+      player?.pause();
       setIsPlaying(false);
     }
-  }, [isActive]);
-
-  const handleVideoPress = async () => {
-    setShowControls(true);
-    setIsPlaying(!isPlaying);
-    if (isPlaying) {
-      await videoRef.current?.pauseAsync();
-    } else {
-      await videoRef.current?.playAsync();
-    }
-  };
+  }, [isActive, player]);
 
   const handleLike = () => {
     scale.value = withSequence(
@@ -150,7 +148,6 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
     transform: [{ scale: scale.value }],
   }));
 
-  const [showDescription, setShowDescription] = useState(false);
   const [dictionaryPopup, setDictionaryPopup] = useState<{
     word: string;
     position: { x: number; y: number };
@@ -159,98 +156,86 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
   return (
     <View className='flex-1'>
       {/* Video Container - top 2/3 */}
-      <View className="flex-[2]">
-        <Pressable onPress={handleVideoPress} className="flex-1">
-          <Video
-            ref={videoRef}
-            source={{ uri: video.video_url }}
-            shouldPlay={isPlaying}
-            isLooping
-            style={{ flex: 1 }}
-            resizeMode={ResizeMode.CONTAIN}
-            onPlaybackStatusUpdate={onPlaybackStatusUpdate}
-          />
+      <View className='flex-[2]'>
+        <VideoView
+          player={player}
+          style={{ flex: 1 }}
+          contentFit='contain'
+          nativeControls
+        />
 
-          {/* Standard video subtitles */}
-          {currentSubtitle && (
-            <View className="absolute bottom-4 left-4 right-4 items-center">
-              <Text className="text-white text-lg text-center bg-black/50 px-4 py-2 rounded-lg">
-                {currentSubtitle}
-              </Text>
-            </View>
-          )}
-
-          {showControls && !isPlaying && (
-            <Animated.View
-              className="absolute items-center justify-center rounded-full bg-black/50"
-              style={{
-                top: '50%',
-                left: '50%',
-                transform: [{ translateX: -25 }, { translateY: -25 }],
-                width: 50,
-                height: 50,
-              }}
-            >
-              <Play size={24} color="white" />
-            </Animated.View>
-          )}
-        </Pressable>
+        {/* Standard video subtitles */}
+        {currentSubtitle && (
+          <View className='absolute bottom-28 left-4 right-4 items-center'>
+            <Text className='rounded-md bg-black/50 px-4 py-2 text-center text-lg text-white'>
+              {currentSubtitle}
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Video Info and Actions Bar */}
-      <View className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-        <View className="px-4 py-3">
+      <View className='border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900'>
+        <View className='px-4 py-3'>
           {/* Title and Username */}
-          <View className="flex-row justify-between items-start">
-            <View className="flex-1 mr-4">
-              <Text className="font-semibold text-gray-900 dark:text-white text-base">{video.title}</Text>
-              <Text className="text-sm text-gray-500 dark:text-gray-400">@{video.user.username}</Text>
+          <View className='flex-row items-start justify-between'>
+            <View className='mr-4 flex-1'>
+              <Text className='text-base font-semibold text-gray-900 dark:text-white'>
+                {video.title}
+              </Text>
+              <Text className='text-sm text-gray-500 dark:text-gray-400'>
+                @{video.user.username}
+              </Text>
             </View>
-            
+
             {/* Action Buttons */}
-            <View className="flex-row items-center">
-              <View className="flex-row items-center mr-2">
+            <View className='flex-row items-center'>
+              <View className='mr-2 flex-row items-center'>
                 <Animated.View style={animatedStyle}>
                   <Button
-                    variant="ghost"
+                    variant='ghost'
                     onPress={handleLike}
-                    className="h-8 w-8 active:bg-transparent"
+                    className='h-8 w-8 active:bg-transparent'
                   >
                     <Heart
                       size={20}
                       color={isLiked ? '#ef4444' : '#374151'}
                       fill={isLiked ? '#ef4444' : 'none'}
-                      className="dark:text-white"
+                      className='dark:text-white'
                     />
                   </Button>
                 </Animated.View>
-                <Text className="text-gray-900 dark:text-white text-sm">
+                <Text className='text-sm text-gray-900 dark:text-white'>
                   {formatCount(localLikeCount)}
                 </Text>
               </View>
 
-              <View className="flex-row items-center mr-2">
-                <Button variant="ghost" className="h-8 w-8">
-                  <MessageCircle size={20} className="text-gray-900 dark:text-white" />
+              <View className='mr-2 flex-row items-center'>
+                <Button 
+                  variant='ghost' 
+                  className='h-8 w-8'
+                  onPress={() => setShowComments(true)}
+                >
+                  <MessageCircle
+                    size={20}
+                    className='text-gray-900 dark:text-white'
+                  />
                 </Button>
-                <Text className="text-gray-900 dark:text-white text-sm">
+                <Text className='text-sm text-gray-900 dark:text-white'>
                   {formatCount(video.comment_count ?? 0)}
                 </Text>
               </View>
 
-              <View className="items-center">
-                <Button variant="ghost" className="h-8 w-8">
-                  <Share2 size={20} className="text-gray-900 dark:text-white" />
-                </Button>
-              </View>
-
-              <View className="items-center">
+              <View className='items-center'>
                 <Button
-                  variant="ghost"
-                  className="h-8 w-8"
+                  variant='ghost'
+                  className='h-8 w-8'
                   onPress={() => setShowDescription(true)}
                 >
-                  <MoreVertical size={20} className="text-gray-900 dark:text-white" />
+                  <MoreVertical
+                    size={20}
+                    className='text-gray-900 dark:text-white'
+                  />
                 </Button>
               </View>
             </View>
@@ -259,7 +244,7 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
       </View>
 
       {/* Language Learning Panel - bottom 1/3 */}
-      <View className="flex-1">
+      <View className='flex-1'>
         <TabbedPanel
           language={video.language}
           subtitles={subtitles ?? []}
@@ -292,6 +277,13 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
         title={video.title}
         description={video.description ?? ''}
         username={video.user.username}
+      />
+
+      {/* Comment Sheet */}
+      <CommentSheet
+        isOpen={showComments}
+        onClose={() => setShowComments(false)}
+        videoId={video.id}
       />
     </View>
   );

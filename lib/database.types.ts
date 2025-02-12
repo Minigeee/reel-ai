@@ -34,11 +34,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      comment_likes: {
+        Row: {
+          comment_id: string
+          created_at: string | null
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string | null
+          user_id: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_likes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comment_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           content: string
           created_at: string | null
           id: string
+          like_count: number | null
+          parent_id: string | null
+          reply_count: number | null
           updated_at: string | null
           user_id: string
           video_id: string
@@ -47,6 +83,9 @@ export type Database = {
           content: string
           created_at?: string | null
           id?: string
+          like_count?: number | null
+          parent_id?: string | null
+          reply_count?: number | null
           updated_at?: string | null
           user_id: string
           video_id: string
@@ -55,11 +94,21 @@ export type Database = {
           content?: string
           created_at?: string | null
           id?: string
+          like_count?: number | null
+          parent_id?: string | null
+          reply_count?: number | null
           updated_at?: string | null
           user_id?: string
           video_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "comments_user_id_fkey"
             columns: ["user_id"]

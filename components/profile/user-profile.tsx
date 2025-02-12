@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { ActivityIndicator, Image, ScrollView, View, RefreshControl } from 'react-native';
-import { Avatar, AvatarFallback } from '~/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { useUser } from '../../lib/hooks/use-user';
 import { supabase } from '../../lib/supabase';
 import { Text } from '../ui/text';
@@ -89,7 +89,7 @@ export function UserProfile({ userId, isEditable }: UserProfileProps) {
               className='h-20 w-20'
               alt={`${user.display_name || user.username}'s avatar`}
             >
-              <Image source={{ uri: user.avatar_url ?? undefined }} />
+              <AvatarImage source={{ uri: user.avatar_url ?? undefined }} />
               <AvatarFallback>
                 <Text className='text-xl text-muted-foreground'>
                   {(user.display_name || user.username)

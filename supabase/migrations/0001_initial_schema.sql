@@ -82,6 +82,8 @@ create table public.comments (
     video_id uuid references public.videos(id) on delete cascade not null,
     user_id uuid references public.users(id) on delete cascade not null,
     content text not null,
+    parent_id uuid references public.comments(id) on delete cascade,
+    reply_count integer default 0,
     created_at timestamptz default now(),
     updated_at timestamptz default now(),
     
