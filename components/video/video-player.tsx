@@ -265,6 +265,8 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
           subtitles={subtitles ?? []}
           currentTime={currentTime}
           videoId={video.id}
+          videoTitle={video.title}
+          videoDescription={video.description ?? undefined}
           onWordPress={(word) => {
             setDictionaryPopup({
               word,

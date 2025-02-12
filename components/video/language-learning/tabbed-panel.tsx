@@ -1,38 +1,48 @@
-import { View, Text, Pressable } from 'react-native';
 import { useState } from 'react';
-import { ScrollingSubtitles } from './scrolling-subtitles';
-import { AIChat } from './ai-chat';
+import { Pressable, Text, View } from 'react-native';
 import type { SubtitleSegment } from '../video-player';
+import { AIChat } from './ai-chat';
+import { ScrollingSubtitles } from './scrolling-subtitles';
 
 interface TabbedPanelProps {
   subtitles: SubtitleSegment[];
   currentTime: number;
-  videoId: string;
+  videoTitle: string;
+  videoDescription?: string;
   onWordPress: (word: string) => void;
   language: string;
+  videoId: string;
 }
 
 type Tab = 'subtitles' | 'chat';
 
-export function TabbedPanel({ subtitles, currentTime, videoId, onWordPress, language }: TabbedPanelProps) {
+export function TabbedPanel({
+  subtitles,
+  currentTime,
+  videoTitle,
+  videoDescription,
+  onWordPress,
+  language,
+  videoId,
+}: TabbedPanelProps) {
   const [activeTab, setActiveTab] = useState<Tab>('subtitles');
 
   return (
-    <View className="flex-1 bg-white dark:bg-gray-900">
-      <View className="flex-row border-b border-gray-200 dark:border-gray-700">
+    <View className='flex-1 bg-white dark:bg-gray-900'>
+      <View className='flex-row border-b border-gray-200 dark:border-gray-700'>
         <TabButton
-          label="Subtitles"
+          label='Subtitles'
           isActive={activeTab === 'subtitles'}
           onPress={() => setActiveTab('subtitles')}
         />
         <TabButton
-          label="AI Tutor"
+          label='AI Tutor'
           isActive={activeTab === 'chat'}
           onPress={() => setActiveTab('chat')}
         />
       </View>
 
-      <View className="flex-1">
+      <View className='flex-1'>
         {activeTab === 'subtitles' ? (
           <ScrollingSubtitles
             language={language}
@@ -41,7 +51,14 @@ export function TabbedPanel({ subtitles, currentTime, videoId, onWordPress, lang
             onWordPress={onWordPress}
           />
         ) : (
-          <AIChat videoId={videoId} />
+          <AIChat
+            language={language}
+            subtitles={subtitles}
+            currentTime={currentTime}
+            videoTitle={videoTitle}
+            videoDescription={videoDescription}
+            videoId={videoId}
+          />
         )}
       </View>
     </View>
@@ -58,11 +75,13 @@ function TabButton({ label, isActive, onPress }: TabButtonProps) {
   return (
     <Pressable
       onPress={onPress}
-      className={`flex-1 py-3 px-4 ${isActive ? 'border-b-2 border-blue-500' : ''}`}
+      className={`flex-1 px-4 py-3 ${isActive ? 'border-b-2 border-blue-500' : ''}`}
     >
       <Text
         className={`text-center ${
-          isActive ? 'text-blue-500 font-semibold' : 'text-gray-600 dark:text-gray-400'
+          isActive
+            ? 'font-semibold text-blue-500'
+            : 'text-gray-600 dark:text-gray-400'
         }`}
       >
         {label}
