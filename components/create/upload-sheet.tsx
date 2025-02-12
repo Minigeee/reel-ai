@@ -1,5 +1,5 @@
 import { BottomSheetView } from '@gorhom/bottom-sheet';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -45,20 +45,63 @@ export function UploadSheet({ isVisible, onClose }: UploadSheetProps) {
   const { videoFile, videoDetails, setVideoDetails, reset } = useCreatorStore();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState<string>('');
+
+  const getProgressFromStatus = (status: string): number => {
+    const progressMap: Record<string, number> = {
+      'starting': 0,
+      'processing_video': 20,
+      'generating_thumbnail': 35,
+      'getting_duration': 40,
+      'uploading_to_storage': 50,
+      'extracting_audio': 65,
+      'transcribing': 75,
+      'updating_subtitles': 90,
+      'completed': 100,
+      'error': 0
+    };
+    return progressMap[status] ?? 0;
+  };
+
+  const getUploadStatusText = () => {
+    switch (uploadStatus) {
+      case 'processing_video':
+        return 'Processing video...';
+      case 'generating_thumbnail':
+        return 'Generating thumbnail...';
+      case 'getting_duration':
+        return 'Getting video duration...';
+      case 'uploading_to_storage':
+        return 'Uploading to storage...';
+      case 'extracting_audio':
+        return 'Extracting audio...';
+      case 'transcribing':
+        return 'Transcribing audio...';
+      case 'updating_subtitles':
+        return 'Updating subtitles...';
+      case 'completed':
+        return 'Upload complete!';
+      case 'error':
+        return 'Upload failed';
+      default:
+        return 'Starting upload...';
+    }
+  };
 
   const handleUpload = async () => {
     if (!videoFile || !videoDetails.title) return;
 
     setIsUploading(true);
-    try {
-      console.log(process.env.EXPO_PUBLIC_VIDEO_SERVER_URL);
+    setUploadStatus('starting');
+    setUploadProgress(0);
 
+    try {
       const {
         data: { session },
       } = await supabase.auth.getSession();
 
       const fname = videoFile.uri.split('/').pop() ?? 'video.mp4';
-      const ext = fname.split('.').pop() ?? 'mp4'; // Map ext to Content-Type
+      const ext = fname.split('.').pop() ?? 'mp4';
       const mimeTypes: Record<string, string> = {
         mp4: 'video/mp4',
         mov: 'video/quicktime',
@@ -99,19 +142,59 @@ export function UploadSheet({ isVisible, onClose }: UploadSheetProps) {
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${session?.access_token}`,
           },
-          credentials: 'include',
         }
       );
 
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
+      const { uploadId } = await response.json();
+      console.log('Upload ID:', uploadId);
 
-      reset();
-      onClose();
+      // Start polling for status updates
+      const pollInterval = setInterval(async () => {
+        try {
+          const statusResponse = await fetch(
+            `${process.env.EXPO_PUBLIC_VIDEO_SERVER_URL}/api/videos/upload-status/${uploadId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${session?.access_token}`,
+              },
+            }
+          );
+          
+          if (!statusResponse.ok) {
+            throw new Error('Failed to fetch status');
+          }
+
+          const data = await statusResponse.json();
+          setUploadStatus(data.status);
+          setUploadProgress(getProgressFromStatus(data.status));
+
+          // Handle completion
+          if (data.status === 'completed') {
+            clearInterval(pollInterval);
+            setIsUploading(false);
+            reset();
+            onClose();
+          }
+
+          // Handle error
+          if (data.status === 'error') {
+            clearInterval(pollInterval);
+            setIsUploading(false);
+            setUploadProgress(0);
+          }
+        } catch (error) {
+          console.error('Status polling error:', error);
+          clearInterval(pollInterval);
+          setIsUploading(false);
+          setUploadProgress(0);
+        }
+      }, 1000); // Poll every second
+
+      // Cleanup polling on component unmount
+      return () => clearInterval(pollInterval);
+
     } catch (error) {
       console.error('Upload error:', error);
-    } finally {
       setIsUploading(false);
       setUploadProgress(0);
     }
@@ -214,13 +297,9 @@ export function UploadSheet({ isVisible, onClose }: UploadSheetProps) {
         <View className='mt-4'>
           <Button
             onPress={handleUpload}
-            disabled={
-              isUploading || !videoDetails.title || !videoDetails.language
-            }
-            variant={isUploading ? 'secondary' : 'default'}
-            className='w-full'
+            disabled={isUploading || !videoDetails.title || !videoDetails.language}
           >
-            <Text>{isUploading ? 'Uploading...' : 'Upload Video'}</Text>
+            <Text>{isUploading ? getUploadStatusText() : 'Upload Video'}</Text>
           </Button>
         </View>
       </BottomSheetView>

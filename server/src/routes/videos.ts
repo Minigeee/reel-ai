@@ -157,13 +157,50 @@ async function uploadToSupabase(
   return video.id;
 }
 
+// Map to store upload statuses
+const uploadStatuses = new Map<string, { status: string; details?: any }>();
+
+// Helper function to update status
+function sendStatusUpdate(uploadId: string, status: string, details?: any) {
+  console.log('updating status', uploadId, status);
+  uploadStatuses.set(uploadId, { status, details });
+}
+
+// Status endpoint for polling
+router.get('/upload-status/:uploadId', (req, res) => {
+  const { uploadId } = req.params;
+  const status = uploadStatuses.get(uploadId);
+
+  if (!status) {
+    res.status(404).json({ error: 'Upload not found' });
+    return;
+  }
+
+  res.json(status);
+
+  // Clean up completed or errored uploads after 5 minutes
+  if (status.status === 'completed' || status.status === 'error') {
+    setTimeout(
+      () => {
+        uploadStatuses.delete(uploadId);
+      },
+      5 * 60 * 1000
+    );
+  }
+});
+
 // Route to handle video upload and processing
 router.post(
   '/upload',
   upload.single('video'),
   async (req: Request, res: any) => {
+    const uploadId = `upload-${Date.now()}`;
+
     try {
       const { title, description, language } = req.body;
+
+      // Send immediate response with uploadId
+      res.json({ success: true, uploadId });
 
       // Get auth user
       const supabase = createClient(
@@ -177,20 +214,15 @@ router.post(
       } = await supabase.auth.getUser(token);
 
       if (!req.file || !user || !title) {
-        return res.status(400).json({
-          success: false,
-          error: 'Missing required fields',
-        });
+        sendStatusUpdate(uploadId, 'error', 'Missing required fields');
+        return;
       }
 
-      console.log('processing video', req.file.path, 'with title', title);
-
+      sendStatusUpdate(uploadId, 'processing_video');
       const inputPath = req.file.path;
       const processedPath = await processVideo(inputPath);
-      console.log('processed video to', processedPath);
 
-      // Generate thumbnail
-      console.log('generating thumbnail');
+      sendStatusUpdate(uploadId, 'generating_thumbnail');
       const thumbnailName = `thumbnail-${Date.now()}.jpg`;
       const thumbnailPath = join(tmpdir(), thumbnailName);
       await new Promise<void>((resolve, reject) => {
@@ -205,7 +237,7 @@ router.post(
           .on('error', (err) => reject(err));
       });
 
-      // Get video duration
+      sendStatusUpdate(uploadId, 'getting_duration');
       const duration = await new Promise<number>((resolve, reject) => {
         ffmpeg.ffprobe(processedPath, (err, metadata) => {
           if (err) reject(err);
@@ -216,7 +248,7 @@ router.post(
 
       const fileName = `${user.id}/${Date.now()}-${req.file.originalname}`;
 
-      // Upload video to Supabase
+      sendStatusUpdate(uploadId, 'uploading_to_storage');
       const videoId = await uploadToSupabase(
         supabase,
         processedPath,
@@ -233,16 +265,13 @@ router.post(
       );
 
       try {
-        console.log('extracting audio');
-        // Extract audio directly from processed video
+        sendStatusUpdate(uploadId, 'extracting_audio');
         const audioPath = await extractAudio(processedPath);
 
-        console.log('transcribing audio');
-        // Transcribe using the subtitles service
+        sendStatusUpdate(uploadId, 'transcribing');
         const transcription = await transcribeAudio(audioPath, description);
 
-        console.log('updating subtitle to complete');
-        // Update subtitles status with transcription results
+        sendStatusUpdate(uploadId, 'updating_subtitles');
         await updateSubtitleStatus(
           supabase,
           videoId,
@@ -251,6 +280,8 @@ router.post(
           transcription.segments
         );
 
+        sendStatusUpdate(uploadId, 'completed', { videoId });
+
         console.log('finishing processing');
         // Clean up temporary files
         await Promise.all([
@@ -258,11 +289,6 @@ router.post(
           unlink(processedPath),
           unlink(thumbnailPath),
         ]);
-
-        res.json({
-          success: true,
-          videoId,
-        });
       } catch (error) {
         // Update subtitle status to failed
         await updateSubtitleStatus(
@@ -278,10 +304,11 @@ router.post(
       }
     } catch (error) {
       console.error('Error processing video:', error);
-      res.status(500).json({
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
+      sendStatusUpdate(
+        uploadId,
+        'error',
+        error instanceof Error ? error.message : 'Unknown error'
+      );
     }
   }
 );
