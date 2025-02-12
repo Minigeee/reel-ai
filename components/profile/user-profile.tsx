@@ -136,7 +136,7 @@ export function UserProfile({ userId, isEditable }: UserProfileProps) {
         {/* Videos */}
         <View className='flex-1'>
           <Text className='mb-4 text-lg font-bold'>Videos</Text>
-          <VideoList userId={userId} />
+          <VideoList userId={userId} onRefetch={handleRefresh} />
         </View>
       </View>
     </ScrollView>

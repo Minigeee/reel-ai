@@ -3,7 +3,8 @@
 - [X] Pop up dictionary
 - [X] AI chat integration
 - [X] Add playback controls
-- [ ] Comment system
+- [X] Comment system
+- [ ] Custom video processing pipeline
 - [ ] English translation
 - [ ] Flashcard word bank
 

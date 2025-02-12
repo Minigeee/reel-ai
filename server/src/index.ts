@@ -2,6 +2,12 @@ import { config } from 'dotenv';
 import { resolve } from 'path';
 import express from 'express';
 import subtitleRoutes from './routes/subtitles.js';
+import videoRoutes from './routes/videos.js';
+import ffmpeg from 'fluent-ffmpeg';
+import { unlink } from 'fs/promises';
+import multer from 'multer';
+import { tmpdir } from 'os';
+import { join } from 'path';
 
 const rootDir = process.cwd();
 
@@ -17,6 +23,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/subtitles', subtitleRoutes);
+app.use('/api/videos', videoRoutes);
 
 // Health check
 app.get('/', (req, res) => {

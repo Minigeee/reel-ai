@@ -19,18 +19,19 @@ type Video = Tables<'videos'>;
 
 interface VideoListProps {
   userId: string;
+  onRefetch?: () => void;
 }
 
 iconWithClassName(ImageIcon);
 
-export function VideoList({ userId }: VideoListProps) {
+export function VideoList({ userId, onRefetch }: VideoListProps) {
   const router = useRouter();
   const { width } = Dimensions.get('window');
   const numColumns = 3;
   const spacing = 10;
   const itemSize = (width - spacing * (numColumns + 1)) / numColumns;
 
-  const { data, isLoading, hasNextPage, fetchNextPage } = useInfiniteQuery({
+  const { data, isLoading, hasNextPage, fetchNextPage, refetch } = useInfiniteQuery({
     queryKey: ['user-videos', userId],
     queryFn: async ({ pageParam = 0 }) => {
       const { data, error } = await supabase
@@ -82,6 +83,10 @@ export function VideoList({ userId }: VideoListProps) {
     },
     [itemSize, router]
   );
+
+  const handleRefetch = useCallback(() => {
+    onRefetch?.();
+  }, [onRefetch, refetch]);
 
   if (isLoading) {
     return (
