@@ -1,4 +1,4 @@
-import { Send } from 'lucide-react-native';
+import { RefreshCw, Send } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   Pressable,
@@ -30,7 +30,7 @@ export function AIChat({
   videoDescription,
   videoId,
 }: AIChatProps) {
-  const { messages, addMessage } = useChatStore();
+  const { messages, addMessage, clearMessages } = useChatStore();
   const currentMessages = messages[videoId] || [];
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -103,6 +103,15 @@ export function AIChat({
 
   return (
     <View className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-white'} flex flex-col`}>
+      <View className={`flex-row justify-end p-2 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+        <Pressable
+          onPress={() => clearMessages(videoId)}
+          className='flex-row items-center rounded-full bg-blue-500 px-3 py-1.5 active:opacity-80'
+        >
+          <RefreshCw size={16} color='white' className='mr-1' />
+          <Text className='text-white text-sm font-medium'>New Chat</Text>
+        </Pressable>
+      </View>
       <GestureDetector gesture={Gesture.Native()}>
         <ScrollView
           className='h-0 px-4 py-2'

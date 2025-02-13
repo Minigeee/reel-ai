@@ -4,8 +4,8 @@
 - [X] AI chat integration
 - [X] Add playback controls
 - [X] Comment system
-- [ ] Custom video processing pipeline
-- [ ] English translation
+- [X] Custom video processing pipeline
+- [ ] Improve UI/UX
 - [ ] Flashcard word bank
 
 ## Language Learning Video Player

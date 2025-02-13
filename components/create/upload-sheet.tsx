@@ -285,11 +285,11 @@ export function UploadSheet({ isVisible, onClose }: UploadSheetProps) {
             <View className='h-1 overflow-hidden rounded-full bg-gray-200'>
               <View
                 className='h-full rounded-full bg-green-500'
-                style={{ width: `${uploadProgress * 100}%` }}
+                style={{ width: `${uploadProgress}%` }}
               />
             </View>
             <Text className='text-center text-xs text-green-500'>
-              {Math.round(uploadProgress * 100)}%
+              {Math.round(uploadProgress)}%
             </Text>
           </View>
         )}
