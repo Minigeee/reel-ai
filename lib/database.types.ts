@@ -161,6 +161,36 @@ export type Database = {
         }
         Relationships: []
       }
+      flashcards: {
+        Row: {
+          created_at: string
+          id: string
+          language: string
+          last_reviewed_at: string | null
+          review_count: number | null
+          user_id: string
+          word: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          language?: string
+          last_reviewed_at?: string | null
+          review_count?: number | null
+          user_id: string
+          word: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: string
+          last_reviewed_at?: string | null
+          review_count?: number | null
+          user_id?: string
+          word?: string
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string | null

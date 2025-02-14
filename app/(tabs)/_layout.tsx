@@ -1,6 +1,5 @@
 import { Redirect, Tabs } from 'expo-router';
-import { Home, Plus, Search, Settings, User } from 'lucide-react-native';
-import { ThemeToggle } from '~/components/ThemeToggle';
+import { Book, Home, Plus, Search, Settings, User } from 'lucide-react-native';
 import { useAuth } from '~/lib/providers/auth-provider';
 import { useColorScheme } from '~/lib/useColorScheme';
 
@@ -61,12 +60,17 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name='flashcards'
+        options={{
+          title: 'Flashcards',
+          tabBarIcon: ({ color, size }) => <Book color={color} size={size} />,
+        }}
+      />
+      <Tabs.Screen
         name='settings'
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color, size }) => (
-            <Settings color={color} size={size} />
-          ),
+          href: null,
         }}
       />
       <Tabs.Screen

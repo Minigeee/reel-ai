@@ -69,6 +69,7 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
 
   const player = useVideoPlayer(video.video_url, (player) => {
     player.timeUpdateEventInterval = 0.25;
+    player.loop = true;
 
     // Add progress listener
     player.addListener('timeUpdate', (event) => {
@@ -319,6 +320,7 @@ export function VideoPlayer({ video, isActive }: VideoPlayerProps) {
       {/* Dictionary Popup */}
       {dictionaryPopup && (
         <DictionaryPopup
+          language={video.language}
           word={dictionaryPopup.word}
           position={dictionaryPopup.position}
           onClose={() => setDictionaryPopup(null)}

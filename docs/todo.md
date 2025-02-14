@@ -5,8 +5,9 @@
 - [X] Add playback controls
 - [X] Comment system
 - [X] Custom video processing pipeline
-- [ ] Improve UI/UX
+- [X] Improve UI/UX
 - [ ] Flashcard word bank
+- [ ] Improve log in UI
 
 ## Language Learning Video Player
 - reserve the bottom ~1/3 of the screen for the language features

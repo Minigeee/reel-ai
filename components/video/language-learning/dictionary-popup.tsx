@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { X } from 'lucide-react-native';
+import { Plus, X } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Button } from '~/components/ui/button';
+import { useFlashcards } from '~/lib/hooks/use-flashcards';
 import { supabase } from '~/lib/supabase';
 
 interface DictionaryEntry {
@@ -49,6 +51,26 @@ export function DictionaryPopup({
   position,
 }: DictionaryPopupProps) {
   const { data: entry, isLoading, error } = useDictionaryQuery(word, language);
+  const { addFlashcard, checkFlashcardExists } = useFlashcards(language);
+  const [isInFlashcards, setIsInFlashcards] = useState(false);
+
+  useEffect(() => {
+    const checkExists = async () => {
+      const exists = await checkFlashcardExists(word, language);
+      setIsInFlashcards(exists);
+    };
+    checkExists();
+  }, [word, language]);
+
+  const handleAddToFlashcards = async () => {
+    try {
+      await addFlashcard.mutateAsync({ word, language });
+      setIsInFlashcards(true);
+    } catch (err) {
+      // Word already exists or other error
+      console.error('Failed to add flashcard:', err);
+    }
+  };
 
   return (
     <Animated.View
@@ -62,11 +84,23 @@ export function DictionaryPopup({
         minWidth: 200,
       }}
     >
-      <View className='mb-2 flex-row items-center justify-between gap-2 pr-0'>
+      <View className='mb-2 flex-row items-center justify-between gap-1 pr-0'>
         <Text className='text-lg font-bold text-white'>{word}</Text>
-        <Button size='icon' variant='ghost' onPress={onClose}>
-          <X size={20} color='white' />
-        </Button>
+        <View className='flex-row gap-2'>
+          {!isInFlashcards && (
+            <Button 
+              size='icon' 
+              variant='ghost' 
+              onPress={handleAddToFlashcards}
+              disabled={addFlashcard.isPending}
+            >
+              <Plus size={20} color='white' />
+            </Button>
+          )}
+          <Button size='icon' variant='ghost' onPress={onClose}>
+            <X size={20} color='white' />
+          </Button>
+        </View>
       </View>
 
       {(entry?.extra?.readings?.[0] || entry?.extra?.reading) && (
@@ -80,6 +114,12 @@ export function DictionaryPopup({
       )}
 
       {error && <Text className='text-red-400'>Failed to load definition</Text>}
+
+      {isInFlashcards && (
+        <Text className='mb-2 text-sm text-emerald-400'>
+          Added to flashcards
+        </Text>
+      )}
 
       {entry && (
         <>

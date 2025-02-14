@@ -1,6 +1,7 @@
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import {
   Bell,
+  ChevronLeft,
   Globe,
   LogOut,
   Moon,
@@ -8,7 +9,7 @@ import {
   Volume2,
 } from 'lucide-react-native';
 import { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, Pressable } from 'react-native';
 import { Button } from '~/components/ui/button';
 import {
   Select,
@@ -49,6 +50,7 @@ const PROFICIENCY_LEVELS = [
 iconWithClassName(Globe);
 iconWithClassName(Volume2);
 iconWithClassName(Settings);
+iconWithClassName(ChevronLeft);
 iconWithClassName(Bell);
 iconWithClassName(Moon);
 
@@ -92,95 +94,110 @@ export default function SettingsScreen() {
   );
 
   return (
-    <ScrollView className='flex-1 bg-white dark:bg-gray-950'>
-      <View className='px-4 py-6'>
-        {/* Language Settings */}
-        <View className='mb-6'>
-          <Text className='mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100'>
-            Language Preferences
-          </Text>
-          <SettingItem icon={Globe} title='Target Language'>
-            <View className='w-32'>
-              <Select
-                value={targetLanguage}
-                onValueChange={setTargetLanguage as any}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder='Select language' />
-                </SelectTrigger>
-                <SelectContent>
-                  {LANGUAGE_OPTIONS.map((lang) => (
-                    <SelectItem
-                      key={lang.value}
-                      label={lang.label}
-                      value={lang.value}
-                    >
-                      {lang.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </View>
-          </SettingItem>
-          <SettingItem icon={Volume2} title='Proficiency Level'>
-            <View className='w-32'>
-              <Select
-                value={proficiencyLevel}
-                onValueChange={setProficiencyLevel as any}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder='Select level' />
-                </SelectTrigger>
-                <SelectContent>
-                  {PROFICIENCY_LEVELS.map((level) => (
-                    <SelectItem
-                      key={level.value}
-                      label={level.label}
-                      value={level.value}
-                    >
-                      {level.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </View>
-          </SettingItem>
-        </View>
+    <>
+      <Stack.Screen
+        options={{
+          headerLeft: () => (
+            <Pressable
+              onPress={() => router.back()}
+              className='ml-2 mr-2'
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <ChevronLeft size={24} className='text-foreground' />
+            </Pressable>
+          ),
+        }}
+      />
+      <ScrollView className='flex-1 bg-white dark:bg-gray-950'>
+        <View className='px-4 py-6'>
+          {/* Language Settings */}
+          <View className='mb-6'>
+            <Text className='mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100'>
+              Language Preferences
+            </Text>
+            <SettingItem icon={Globe} title='Target Language'>
+              <View className='w-32'>
+                <Select
+                  value={targetLanguage}
+                  onValueChange={setTargetLanguage as any}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder='Select language' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANGUAGE_OPTIONS.map((lang) => (
+                      <SelectItem
+                        key={lang.value}
+                        label={lang.label}
+                        value={lang.value}
+                      >
+                        {lang.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </View>
+            </SettingItem>
+            <SettingItem icon={Volume2} title='Proficiency Level'>
+              <View className='w-32'>
+                <Select
+                  value={proficiencyLevel}
+                  onValueChange={setProficiencyLevel as any}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder='Select level' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PROFICIENCY_LEVELS.map((level) => (
+                      <SelectItem
+                        key={level.value}
+                        label={level.label}
+                        value={level.value}
+                      >
+                        {level.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </View>
+            </SettingItem>
+          </View>
 
-        {/* App Settings */}
-        <View className='mb-6'>
-          <Text className='mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100'>
-            App Preferences
-          </Text>
-          <SettingItem icon={Settings} title='Auto-play Videos'>
-            <Switch checked={autoPlay} onCheckedChange={setAutoPlay} />
-          </SettingItem>
-          <SettingItem icon={Bell} title='Notifications'>
-            <Switch
-              checked={notifications}
-              onCheckedChange={setNotifications}
-            />
-          </SettingItem>
-          <SettingItem icon={Moon} title='Dark Mode'>
-            <Switch 
-              checked={isDarkColorScheme} 
-              onCheckedChange={toggleColorScheme}
-            />
-          </SettingItem>
-        </View>
+          {/* App Settings */}
+          <View className='mb-6'>
+            <Text className='mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100'>
+              App Preferences
+            </Text>
+            <SettingItem icon={Settings} title='Auto-play Videos'>
+              <Switch checked={autoPlay} onCheckedChange={setAutoPlay} />
+            </SettingItem>
+            <SettingItem icon={Bell} title='Notifications'>
+              <Switch
+                checked={notifications}
+                onCheckedChange={setNotifications}
+              />
+            </SettingItem>
+            <SettingItem icon={Moon} title='Dark Mode'>
+              <Switch 
+                checked={isDarkColorScheme} 
+                onCheckedChange={toggleColorScheme}
+              />
+            </SettingItem>
+          </View>
 
-        {/* Account Actions */}
-        <View className='mt-6'>
-          <Button
-            variant='destructive'
-            onPress={handleSignOut}
-            className='w-full flex-row items-center justify-center gap-2 bg-red-600 dark:bg-red-700'
-          >
-            <LogOut size={20} />
-            <Text className='font-semibold text-white'>Sign Out</Text>
-          </Button>
+          {/* Account Actions */}
+          <View className='mt-6'>
+            <Button
+              variant='destructive'
+              onPress={handleSignOut}
+              className='w-full flex-row items-center justify-center gap-2 bg-red-600 dark:bg-red-700'
+            >
+              <LogOut size={20} />
+              <Text className='font-semibold text-white'>Sign Out</Text>
+            </Button>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 }
