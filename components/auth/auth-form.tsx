@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Text } from '~/components/ui/text';
 import { supabase } from '../../lib/supabase';
 
-export function AuthForm() {
+interface AuthFormProps {
+  defaultTab?: 'signin' | 'signup';
+}
+
+export function AuthForm({ defaultTab = 'signin' }: AuthFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'signin' | 'signup'>(defaultTab);
 
   const handleSignIn = async () => {
     try {
@@ -50,7 +55,7 @@ export function AuthForm() {
 
       if (signUpError) throw signUpError;
 
-      if (authData.user) {
+      if (authData.user && authData.user.email) {
         // Create a profile for the new user
         const { error: profileError } = await supabase.from('users').insert({
           id: authData.user.id,
@@ -76,52 +81,106 @@ export function AuthForm() {
     }
   };
 
+  const resetForm = () => {
+    setEmail('');
+    setPassword('');
+    setUsername('');
+    setError(null);
+  };
+
+  const handleTabChange = (tab: 'signin' | 'signup') => {
+    setActiveTab(tab);
+    resetForm();
+  };
+
   return (
-    <View style={{ padding: 20, gap: 16 }}>
-    <View>
-      <Text id='usernameLabel'>Username</Text>
-      <Input
-        placeholder='Choose a username'
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize='none'
-        aria-labelledby='usernameLabel'
-      />
-    </View>
-    
-      <View>
-        <Text id='emailLabel'>Email</Text>
-        <Input
-          placeholder='Enter your email'
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize='none'
-          keyboardType='email-address'
-          aria-labelledby='emailLabel'
-        />
+    <View className='w-full'>
+      <View className='mb-6 flex-row border-b border-border'>
+        <Pressable
+          onPress={() => handleTabChange('signin')}
+          className={`flex-1 py-3 ${activeTab === 'signin' ? 'border-b-2 border-primary' : ''}`}
+        >
+          <Text
+            className={`text-center ${activeTab === 'signin' ? 'font-medium text-primary' : 'text-muted-foreground'}`}
+          >
+            Sign In
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => handleTabChange('signup')}
+          className={`flex-1 py-3 ${activeTab === 'signup' ? 'border-b-2 border-primary' : ''}`}
+        >
+          <Text
+            className={`text-center ${activeTab === 'signup' ? 'font-medium text-primary' : 'text-muted-foreground'}`}
+          >
+            Sign Up
+          </Text>
+        </Pressable>
       </View>
 
-      <View>
-        <Text id='passwordLabel'>Password</Text>
-        <Input
-          placeholder='Enter your password'
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          aria-labelledby='passwordLabel'
-        />
-      </View>
+      <View className='gap-4'>
+        {activeTab === 'signup' && (
+          <View>
+            <Text className='mb-1.5 text-sm text-foreground' id='usernameLabel'>
+              Username
+            </Text>
+            <Input
+              placeholder='Choose a username'
+              value={username}
+              onChangeText={setUsername}
+              autoCapitalize='none'
+              aria-labelledby='usernameLabel'
+              className='h-12'
+            />
+          </View>
+        )}
 
-      {error && <Text style={{ color: 'red' }}>{error}</Text>}
+        <View>
+          <Text className='mb-1.5 text-sm text-foreground' id='emailLabel'>
+            Email
+          </Text>
+          <Input
+            placeholder='Enter your email'
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize='none'
+            keyboardType='email-address'
+            aria-labelledby='emailLabel'
+            className='h-12'
+          />
+        </View>
 
-      <View style={{ gap: 8 }}>
-        <Button onPress={handleSignIn} disabled={loading}>
-          <Text>{loading ? 'Signing in...' : 'Sign In'}</Text>
-        </Button>
+        <View>
+          <Text className='mb-1.5 text-sm text-foreground' id='passwordLabel'>
+            Password
+          </Text>
+          <Input
+            placeholder='Enter your password'
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            aria-labelledby='passwordLabel'
+            className='h-12'
+          />
+        </View>
 
-        <Button onPress={handleSignUp} variant='secondary' disabled={loading}>
-          <Text>{loading ? 'Signing up...' : 'Sign Up'}</Text>
-        </Button>
+        {error && <Text className='text-sm text-red-500'>{error}</Text>}
+
+        <View className='mt-6'>
+          {activeTab === 'signin' ? (
+            <Button onPress={handleSignIn} disabled={loading} className='h-12'>
+              <Text className='text-base'>
+                {loading ? 'Signing in...' : 'Sign In'}
+              </Text>
+            </Button>
+          ) : (
+            <Button onPress={handleSignUp} disabled={loading} className='h-12'>
+              <Text className='text-base'>
+                {loading ? 'Signing up...' : 'Sign Up'}
+              </Text>
+            </Button>
+          )}
+        </View>
       </View>
     </View>
   );
