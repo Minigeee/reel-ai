@@ -1,6 +1,6 @@
+import { User } from '@supabase/supabase-js';
 import { PropsWithChildren, createContext, useContext } from 'react';
 import { useAuthStore } from '../stores/auth-store';
-import { User } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;

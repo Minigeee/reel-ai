@@ -8,4 +8,4 @@ export function Providers({ children }: PropsWithChildren) {
       <AuthProvider>{children}</AuthProvider>
     </QueryClientProvider>
   );
-} 
+}

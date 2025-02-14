@@ -1,7 +1,7 @@
+import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { StyleSheet } from 'react-native';
 import { Sheet } from '~/components/ui/sheet';
 import { Text } from '~/components/ui/text';
-import { BottomSheetView } from '@gorhom/bottom-sheet';
 
 interface FiltersSheetProps {
   isVisible: boolean;
@@ -23,4 +23,4 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
   },
-}); 
+});

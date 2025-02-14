@@ -8,10 +8,10 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Message, useChatStore } from '~/lib/stores/chat-store';
 import { supabase } from '~/lib/supabase';
 import { SubtitleSegment } from '../video-player';
-import { useChatStore, Message } from '~/lib/stores/chat-store';
 
 interface AIChatProps {
   language: string;
@@ -45,13 +45,11 @@ export function AIChat({
         (sub) =>
           sub.start >= currentTime - contextWindow && sub.start <= currentTime
       )
-      .map(
-        (sub) => {
-          const current = sub.start <= currentTime && sub.end >= currentTime;
-          const msg = `[${sub.start.toFixed(1)} - ${sub.end.toFixed(1)}] ${sub.text}`;
-          return current ? '<current>' + msg + '</current>' : msg;
-        }
-      )
+      .map((sub) => {
+        const current = sub.start <= currentTime && sub.end >= currentTime;
+        const msg = `[${sub.start.toFixed(1)} - ${sub.end.toFixed(1)}] ${sub.text}`;
+        return current ? '<current>' + msg + '</current>' : msg;
+      })
       .join('\n');
   };
 
@@ -102,14 +100,18 @@ export function AIChat({
   };
 
   return (
-    <View className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-white'} flex flex-col`}>
-      <View className={`flex-row justify-end p-2 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+    <View
+      className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-white'} flex flex-col`}
+    >
+      <View
+        className={`flex-row justify-end border-b p-2 ${isDark ? 'border-gray-700' : 'border-gray-200'}`}
+      >
         <Pressable
           onPress={() => clearMessages(videoId)}
           className='flex-row items-center rounded-full bg-blue-500 px-3 py-1.5 active:opacity-80'
         >
           <RefreshCw size={16} color='white' className='mr-1' />
-          <Text className='text-white text-sm font-medium'>New Chat</Text>
+          <Text className='text-sm font-medium text-white'>New Chat</Text>
         </Pressable>
       </View>
       <GestureDetector gesture={Gesture.Native()}>

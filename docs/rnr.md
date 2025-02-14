@@ -10,9 +10,9 @@ import { Text } from '~/components/ui/text';
 
 function Example() {
   return (
-      <Button>
-        <Text>Default</Text>
-      </Button>
+    <Button>
+      <Text>Default</Text>
+    </Button>
   );
 }
 ```
@@ -31,13 +31,13 @@ function Example() {
   };
 
   return (
-      <Input
-        placeholder='Write some stuff...'
-        value={value}
-        onChangeText={onChangeText}
-        aria-labelledby='inputLabel'
-        aria-errormessage='inputError'
-      />
+    <Input
+      placeholder='Write some stuff...'
+      value={value}
+      onChangeText={onChangeText}
+      aria-labelledby='inputLabel'
+      aria-errormessage='inputError'
+    />
   );
 }
 ```

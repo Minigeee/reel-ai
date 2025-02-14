@@ -1,7 +1,7 @@
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { Sheet } from '~/components/ui/sheet';
-import { TabbedPanel } from './tabbed-panel';
 import type { SubtitleSegment } from '../video-player';
+import { TabbedPanel } from './tabbed-panel';
 
 interface TabbedPanelSheetProps {
   isOpen: boolean;

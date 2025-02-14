@@ -1,5 +1,5 @@
 import { BottomSheetView } from '@gorhom/bottom-sheet';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { View } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -49,16 +49,16 @@ export function UploadSheet({ isVisible, onClose }: UploadSheetProps) {
 
   const getProgressFromStatus = (status: string): number => {
     const progressMap: Record<string, number> = {
-      'starting': 0,
-      'processing_video': 20,
-      'generating_thumbnail': 35,
-      'getting_duration': 40,
-      'uploading_to_storage': 50,
-      'extracting_audio': 65,
-      'transcribing': 75,
-      'updating_subtitles': 90,
-      'completed': 100,
-      'error': 0
+      starting: 0,
+      processing_video: 20,
+      generating_thumbnail: 35,
+      getting_duration: 40,
+      uploading_to_storage: 50,
+      extracting_audio: 65,
+      transcribing: 75,
+      updating_subtitles: 90,
+      completed: 100,
+      error: 0,
     };
     return progressMap[status] ?? 0;
   };
@@ -159,7 +159,7 @@ export function UploadSheet({ isVisible, onClose }: UploadSheetProps) {
               },
             }
           );
-          
+
           if (!statusResponse.ok) {
             throw new Error('Failed to fetch status');
           }
@@ -192,7 +192,6 @@ export function UploadSheet({ isVisible, onClose }: UploadSheetProps) {
 
       // Cleanup polling on component unmount
       return () => clearInterval(pollInterval);
-
     } catch (error) {
       console.error('Upload error:', error);
       setIsUploading(false);
@@ -297,7 +296,9 @@ export function UploadSheet({ isVisible, onClose }: UploadSheetProps) {
         <View className='mt-4'>
           <Button
             onPress={handleUpload}
-            disabled={isUploading || !videoDetails.title || !videoDetails.language}
+            disabled={
+              isUploading || !videoDetails.title || !videoDetails.language
+            }
           >
             <Text>{isUploading ? getUploadStatusText() : 'Upload Video'}</Text>
           </Button>

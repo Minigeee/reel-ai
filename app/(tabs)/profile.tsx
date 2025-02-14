@@ -33,7 +33,7 @@ export default function ProfileScreen() {
               className='mr-4'
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Settings size={24} className='text-foreground mr-2' />
+              <Settings size={24} className='mr-2 text-foreground' />
             </Pressable>
           ),
         }}

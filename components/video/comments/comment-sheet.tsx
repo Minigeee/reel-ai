@@ -68,7 +68,7 @@ export function CommentSheet({ isOpen, onClose, videoId }: CommentSheetProps) {
         }
       });
 
-      console.log('top level', topLevelComments)
+      console.log('top level', topLevelComments);
       return topLevelComments as Comment[];
     },
   });
@@ -85,7 +85,7 @@ export function CommentSheet({ isOpen, onClose, videoId }: CommentSheetProps) {
         .eq('user_id', user.id);
 
       if (error) throw error;
-      return new Set(data.map(like => like.comment_id));
+      return new Set(data.map((like) => like.comment_id));
     },
     enabled: !!user,
   });
@@ -112,7 +112,6 @@ export function CommentSheet({ isOpen, onClose, videoId }: CommentSheetProps) {
       console.error('Error posting comment:', error);
     }
   }, [comment, videoId, replyTo, queryClient, user]);
-
 
   return (
     <Sheet isVisible={isOpen} onClose={onClose} snapPoints={['80%']}>

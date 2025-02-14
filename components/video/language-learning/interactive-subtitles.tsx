@@ -1,5 +1,5 @@
-import { Text, View } from 'react-native';
 import { useMemo } from 'react';
+import { Text } from 'react-native';
 import TinySegmenter from '~/lib/utils/ja-text-segmenter';
 
 interface InteractiveSubtitlesProps {
@@ -8,7 +8,11 @@ interface InteractiveSubtitlesProps {
   onWordPress: (word: string) => void;
 }
 
-export function InteractiveSubtitles({ text, language, onWordPress }: InteractiveSubtitlesProps) {
+export function InteractiveSubtitles({
+  text,
+  language,
+  onWordPress,
+}: InteractiveSubtitlesProps) {
   // Handle word press
   const handleWordPress = (word: string) => {
     onWordPress(word.toLowerCase().replace(/[.,!?]/g, ''));
@@ -24,7 +28,7 @@ export function InteractiveSubtitles({ text, language, onWordPress }: Interactiv
   }, [text, language]);
 
   return (
-    <Text className='rounded-md bg-black/50 px-4 py-2 text-center text-xl text-white max-w-[60vw]'>
+    <Text className='max-w-[60vw] rounded-md bg-black/50 px-4 py-2 text-center text-xl text-white'>
       {words.map((word, wordIndex) => (
         <Text
           key={wordIndex}
@@ -34,7 +38,8 @@ export function InteractiveSubtitles({ text, language, onWordPress }: Interactiv
           }}
           className='active:opacity-70'
         >
-          {word}{language !== 'ja' && ' '}
+          {word}
+          {language !== 'ja' && ' '}
         </Text>
       ))}
     </Text>

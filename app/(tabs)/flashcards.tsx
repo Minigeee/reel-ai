@@ -95,7 +95,7 @@ export default function FlashcardsScreen() {
         </Button>
       )}
 
-      <View className='mt-3 mb-6 border-b border-gray-200 dark:border-gray-700' />
+      <View className='mb-6 mt-3 border-b border-gray-200 dark:border-gray-700' />
 
       {/* Search Bar */}
       <View className='mb-4 flex-row items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 dark:bg-gray-800'>

@@ -31,29 +31,30 @@ export function VideoList({ userId, onRefetch }: VideoListProps) {
   const spacing = 10;
   const itemSize = (width - spacing * (numColumns + 1)) / numColumns;
 
-  const { data, isLoading, hasNextPage, fetchNextPage, refetch } = useInfiniteQuery({
-    queryKey: ['user-videos', userId],
-    queryFn: async ({ pageParam = 0 }) => {
-      const { data, error } = await supabase
-        .from('videos')
-        .select('id, title, thumbnail_url, view_count, like_count')
-        .eq('user_id', userId)
-        .eq('status', 'published')
-        .order('published_at', { ascending: false })
-        .range(pageParam * 30, (pageParam + 1) * 30 - 1);
+  const { data, isLoading, hasNextPage, fetchNextPage, refetch } =
+    useInfiniteQuery({
+      queryKey: ['user-videos', userId],
+      queryFn: async ({ pageParam = 0 }) => {
+        const { data, error } = await supabase
+          .from('videos')
+          .select('id, title, thumbnail_url, view_count, like_count')
+          .eq('user_id', userId)
+          .eq('status', 'published')
+          .order('published_at', { ascending: false })
+          .range(pageParam * 30, (pageParam + 1) * 30 - 1);
 
-      if (error) throw error;
-      return {
-        pages: data || [],
-        nextPage: pageParam + 1,
-      };
-    },
-    getNextPageParam: (lastPage) => {
-      if (!lastPage?.pages) return undefined;
-      return lastPage.pages.length === 30 ? lastPage.nextPage : undefined;
-    },
-    initialPageParam: 0,
-  });
+        if (error) throw error;
+        return {
+          pages: data || [],
+          nextPage: pageParam + 1,
+        };
+      },
+      getNextPageParam: (lastPage) => {
+        if (!lastPage?.pages) return undefined;
+        return lastPage.pages.length === 30 ? lastPage.nextPage : undefined;
+      },
+      initialPageParam: 0,
+    });
 
   const flattenedData = useMemo(() => {
     if (!data?.pages) return [];

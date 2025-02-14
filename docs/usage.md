@@ -1,4 +1,4 @@
- Usage Examples
+Usage Examples
 
 A collection of usage examples for various components in this project.
 
@@ -72,14 +72,16 @@ export default function App() {
     // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Text style={styles.message}>
+          We need your permission to show the camera
+        </Text>
+        <Button onPress={requestPermission} title='grant permission' />
       </View>
     );
   }
 
   function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
+    setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
   return (
@@ -124,12 +126,12 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
-
 ```
 
 ## Video Upload
 
 ### Required Fields
+
 - `title`: Video title (required)
 - `language`: Language of the content (required)
   - Available options: English (en), Spanish (es), French (fr), German (de), Italian (it), Portuguese (pt), Chinese (zh), Japanese (ja), Korean (ko)
@@ -147,7 +149,7 @@ setVideoDetails({
   title: 'Basic Greetings in Spanish',
   language: 'es',
   difficulty: 'a1',
-  description: 'Learn common Spanish greetings for beginners'
+  description: 'Learn common Spanish greetings for beginners',
 });
 ```
 

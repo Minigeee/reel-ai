@@ -1,12 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
-import { ActivityIndicator, Image, ScrollView, View, RefreshControl } from 'react-native';
+import { useCallback } from 'react';
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  View,
+} from 'react-native';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { useUser } from '../../lib/hooks/use-user';
 import { supabase } from '../../lib/supabase';
 import { Text } from '../ui/text';
 import { VideoList } from '../video/video-list';
 import { FollowButton } from './follow-button';
-import { useCallback } from 'react';
 
 interface UserProfileProps {
   userId: string;
@@ -14,13 +19,18 @@ interface UserProfileProps {
 }
 
 export function UserProfile({ userId, isEditable }: UserProfileProps) {
-  const { data: user, isLoading: isLoadingUser, refetch: refetchUser, isRefetching: isRefetchingUser } = useUser(userId);
+  const {
+    data: user,
+    isLoading: isLoadingUser,
+    refetch: refetchUser,
+    isRefetching: isRefetchingUser,
+  } = useUser(userId);
 
-  const { 
-    data: stats, 
-    isLoading: isLoadingStats, 
+  const {
+    data: stats,
+    isLoading: isLoadingStats,
     refetch: refetchStats,
-    isRefetching: isRefetchingStats 
+    isRefetching: isRefetchingStats,
   } = useQuery({
     queryKey: ['user-stats', userId],
     queryFn: async () => {
@@ -71,13 +81,13 @@ export function UserProfile({ userId, isEditable }: UserProfileProps) {
   }
 
   return (
-    <ScrollView 
+    <ScrollView
       className='flex-1'
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={handleRefresh}
-          tintColor="#666"
+          tintColor='#666'
         />
       }
     >
@@ -116,15 +126,11 @@ export function UserProfile({ userId, isEditable }: UserProfileProps) {
         {/* Stats */}
         <View className='mb-8 flex-row rounded-lg bg-muted p-4'>
           <View className='flex-1 items-center'>
-            <Text className='text-lg font-bold'>
-              {stats?.videos}
-            </Text>
+            <Text className='text-lg font-bold'>{stats?.videos}</Text>
             <Text className='text-sm text-muted-foreground'>Videos</Text>
           </View>
           <View className='flex-1 items-center'>
-            <Text className='text-lg font-bold'>
-              {stats?.followers}
-            </Text>
+            <Text className='text-lg font-bold'>{stats?.followers}</Text>
             <Text className='text-sm text-muted-foreground'>Followers</Text>
           </View>
           <View className='flex-1 items-center'>

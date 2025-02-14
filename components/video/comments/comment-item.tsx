@@ -49,7 +49,7 @@ export function CommentItem({
   }, [comment.id, isLiked, likeMutation]);
 
   return (
-    <View className='py-2 gap-4'>
+    <View className='gap-4 py-2'>
       <View className={`flex-row gap-3 ${level > 0 ? 'ml-8' : ''}`}>
         {/* Avatar placeholder - replace with actual avatar component */}
         <Image

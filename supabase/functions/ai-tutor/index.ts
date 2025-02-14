@@ -3,18 +3,24 @@
 // This enables autocomplete, go to definition, etc.
 
 // Setup type definitions for built-in Supabase Runtime APIs
-import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
-import { ChatOpenAI } from "npm:@langchain/openai";
-import { HumanMessage, SystemMessage, AIMessage } from "npm:@langchain/core/messages";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import {
+  AIMessage,
+  HumanMessage,
+  SystemMessage,
+} from 'npm:@langchain/core/messages';
+import { ChatOpenAI } from 'npm:@langchain/openai';
 
 const requestSchema = z.object({
   language: z.string(),
-  messages: z.array(z.object({
-    text: z.string(),
-    isUser: z.boolean(),
-  })),
+  messages: z.array(
+    z.object({
+      text: z.string(),
+      isUser: z.boolean(),
+    })
+  ),
   subtitleContext: z.string().optional(),
   videoTitle: z.string().optional(),
   videoDescription: z.string().optional(),
@@ -47,7 +53,13 @@ const langMap: Record<string, string> = {
 
 Deno.serve(async (req) => {
   try {
-    const { language, messages, subtitleContext, videoTitle, videoDescription } = requestSchema.parse(await req.json());
+    const {
+      language,
+      messages,
+      subtitleContext,
+      videoTitle,
+      videoDescription,
+    } = requestSchema.parse(await req.json());
 
     const chat = new ChatOpenAI({
       apiKey: Deno.env.get('OPENAI_API_KEY'),
@@ -76,45 +88,46 @@ Deno.serve(async (req) => {
     // Add context from subtitles if available
     if (subtitleContext) {
       messageHistory.push(
-        new SystemMessage(`Latest Subtitles:\n<subtitles>\n${subtitleContext}\n</subtitles>`)
+        new SystemMessage(
+          `Latest Subtitles:\n<subtitles>\n${subtitleContext}\n</subtitles>`
+        )
       );
     }
 
     // Add message history
     messageHistory.push(
       ...messages.map((msg) =>
-        msg.isUser
-          ? new HumanMessage(msg.text)
-          : new AIMessage(msg.text)
+        msg.isUser ? new HumanMessage(msg.text) : new AIMessage(msg.text)
       )
     );
 
     // Get AI response
     const response = await chat.invoke(messageHistory);
 
-    return new Response(
-      JSON.stringify({ response: response.content }),
-      { 
-        headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST',
-          'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-        } 
-      }
-    );
+    return new Response(JSON.stringify({ response: response.content }), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST',
+        'Access-Control-Allow-Headers':
+          'authorization, x-client-info, apikey, content-type',
+      },
+    });
   } catch (error) {
     console.error('Error in AI tutor:', error);
     return new Response(
-      JSON.stringify({ error: 'An error occurred while processing your request' }),
-      { 
+      JSON.stringify({
+        error: 'An error occurred while processing your request',
+      }),
+      {
         status: 500,
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'POST',
-          'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-        } 
+          'Access-Control-Allow-Headers':
+            'authorization, x-client-info, apikey, content-type',
+        },
       }
     );
   }

@@ -1,5 +1,5 @@
-import { create } from 'zustand';
 import { VideoPlayer } from 'expo-video';
+import { create } from 'zustand';
 
 interface VideoPlayerState {
   player: VideoPlayer | null;
@@ -26,7 +26,7 @@ export const useVideoPlayerStore = create<VideoPlayerState>((set, get) => ({
   togglePlayback: () => {
     const { player, isPlaying } = get();
     if (!player) return;
-    
+
     if (isPlaying) {
       player.pause();
     } else {
@@ -38,7 +38,7 @@ export const useVideoPlayerStore = create<VideoPlayerState>((set, get) => ({
   seekTo: (progress) => {
     const { player, duration } = get();
     if (!player || duration === 0) return;
-    
+
     player.currentTime = duration * progress;
   },
-})); 
+}));

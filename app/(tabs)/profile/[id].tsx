@@ -18,7 +18,7 @@ export default function UserProfileScreen() {
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <View className='flex-1'>
-        <View className='flex-row items-center border-b border-border px-4 pt-16 pb-3'>
+        <View className='flex-row items-center border-b border-border px-4 pb-3 pt-16'>
           <Button
             size='icon'
             variant='ghost'

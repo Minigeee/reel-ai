@@ -1,19 +1,30 @@
-import { View, Text, useColorScheme, Dimensions, Pressable } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
-import { ArrowLeft, RotateCw, ChevronLeft, ChevronRight } from 'lucide-react-native';
-import { Button } from '~/components/ui/button';
-import { useFlashcards } from '~/lib/hooks/use-flashcards';
-import { useState, useCallback } from 'react';
+import {
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+  RotateCw,
+} from 'lucide-react-native';
+import { useCallback, useState } from 'react';
+import {
+  Dimensions,
+  Pressable,
+  Text,
+  useColorScheme,
+  View,
+} from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
-  useAnimatedStyle,
-  withTiming,
   interpolate,
+  runOnJS,
+  useAnimatedStyle,
   useSharedValue,
   withSpring,
-  runOnJS,
+  withTiming,
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { useQuery } from '@tanstack/react-query';
+import { Button } from '~/components/ui/button';
+import { useFlashcards } from '~/lib/hooks/use-flashcards';
 import { supabase } from '~/lib/supabase';
 import { cn } from '~/lib/utils';
 
@@ -54,17 +65,20 @@ export default function StudyDeckScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const { language = 'ja' } = useLocalSearchParams<{ language: string }>();
-  
+
   const { flashcards } = useFlashcards(language);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  
+
   const currentWord = flashcards?.[currentIndex]?.word;
-  const { data: dictionaryEntry } = useDictionaryQuery(currentWord ?? '', language);
-  
+  const { data: dictionaryEntry } = useDictionaryQuery(
+    currentWord ?? '',
+    language
+  );
+
   const rotate = useSharedValue(0);
   const translateX = useSharedValue(0);
-  
+
   const goToNextCard = useCallback(() => {
     if (currentIndex < flashcards.length - 1) {
       translateX.value = withSpring(-SCREEN_WIDTH, {}, () => {
@@ -112,7 +126,7 @@ export default function StudyDeckScreen() {
   const frontStyle = useAnimatedStyle(() => {
     const rotateValue = interpolate(rotate.value, [0, 180], [0, 180]);
     const opacity = interpolate(rotate.value, [0, 90, 91, 180], [1, 0, 0, 0]);
-    
+
     return {
       transform: [
         { translateX: translateX.value },
@@ -126,7 +140,7 @@ export default function StudyDeckScreen() {
   const backStyle = useAnimatedStyle(() => {
     const rotateValue = interpolate(rotate.value, [0, 180], [180, 360]);
     const opacity = interpolate(rotate.value, [0, 90, 91, 180], [0, 0, 1, 1]);
-    
+
     return {
       transform: [
         { translateX: translateX.value },
@@ -144,22 +158,33 @@ export default function StudyDeckScreen() {
 
   if (!flashcards?.length) {
     return (
-      <View className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-50'} px-4 pt-16`}>
+      <View
+        className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-50'} px-4 pt-16`}
+      >
         <Button
-          variant="ghost"
-          className="mb-4 self-start"
+          variant='ghost'
+          className='mb-4 self-start'
           onPress={() => router.back()}
         >
-          <View className="flex-row items-center gap-2">
-            <ArrowLeft size={20} className={isDark ? 'text-white' : 'text-gray-900'} />
-            <Text className={isDark ? 'text-white' : 'text-gray-900'}>Back to Deck</Text>
+          <View className='flex-row items-center gap-2'>
+            <ArrowLeft
+              size={20}
+              className={isDark ? 'text-white' : 'text-gray-900'}
+            />
+            <Text className={isDark ? 'text-white' : 'text-gray-900'}>
+              Back to Deck
+            </Text>
           </View>
         </Button>
-        <View className="flex-1 items-center justify-center">
-          <Text className={`text-xl ${isDark ? 'text-white' : 'text-gray-900'}`}>
+        <View className='flex-1 items-center justify-center'>
+          <Text
+            className={`text-xl ${isDark ? 'text-white' : 'text-gray-900'}`}
+          >
             No flashcards found
           </Text>
-          <Text className={`mt-2 text-center ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+          <Text
+            className={`mt-2 text-center ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
+          >
             Add some flashcards to start studying!
           </Text>
         </View>
@@ -168,70 +193,84 @@ export default function StudyDeckScreen() {
   }
 
   return (
-    <View className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-50'} px-4 pt-16`}>
+    <View
+      className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-50'} px-4 pt-16`}
+    >
       <Button
-        variant="ghost"
-        className="mb-4 self-start"
+        variant='ghost'
+        className='mb-4 self-start'
         onPress={() => router.back()}
       >
-        <View className="flex-row items-center">
-          <ArrowLeft size={20} className={cn('mr-2', isDark ? 'text-white' : 'text-gray-900')} />
-          <Text className={isDark ? 'text-white' : 'text-gray-900'}>Back to Deck</Text>
+        <View className='flex-row items-center'>
+          <ArrowLeft
+            size={20}
+            className={cn('mr-2', isDark ? 'text-white' : 'text-gray-900')}
+          />
+          <Text className={isDark ? 'text-white' : 'text-gray-900'}>
+            Back to Deck
+          </Text>
         </View>
       </Button>
 
-      <View className="flex-1">
-        <View className="mb-4 flex-row items-center justify-between">
-          <Text className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>
+      <View className='flex-1'>
+        <View className='mb-4 flex-row items-center justify-between'>
+          <Text
+            className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}
+          >
             Card {currentIndex + 1} of {flashcards.length}
           </Text>
-          <Button
-            variant="ghost"
-            onPress={flipCard}
-          >
-            <RotateCw size={20} className={isDark ? 'text-white' : 'text-gray-900'} />
+          <Button variant='ghost' onPress={flipCard}>
+            <RotateCw
+              size={20}
+              className={isDark ? 'text-white' : 'text-gray-900'}
+            />
           </Button>
         </View>
 
         <GestureDetector gesture={panGesture}>
-          <View className="flex-1">
-            <Animated.View 
+          <View className='flex-1'>
+            <Animated.View
               className={`flex-1 rounded-2xl ${isDark ? 'bg-gray-800' : 'bg-white'} shadow-lg`}
               style={[frontStyle]}
             >
-              <Pressable 
-                className="flex-1 items-center justify-center p-6"
+              <Pressable
+                className='flex-1 items-center justify-center p-6'
                 onPress={flipCard}
               >
-                <Text className={`text-3xl font-medium text-center ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                <Text
+                  className={`text-center text-3xl font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}
+                >
                   {currentWord}
                 </Text>
               </Pressable>
             </Animated.View>
 
-            <Animated.View 
+            <Animated.View
               className={`rounded-2xl ${isDark ? 'bg-gray-800' : 'bg-white'} shadow-lg`}
               style={[backStyle]}
             >
-              <Pressable 
-                className="flex-1 px-6 py-8"
-                onPress={flipCard}
-              >
-                <Text className={`text-2xl font-medium text-center mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <Pressable className='flex-1 px-6 py-8' onPress={flipCard}>
+                <Text
+                  className={`mb-2 text-center text-2xl font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}
+                >
                   {currentWord}
                 </Text>
                 {dictionaryEntry?.extra?.reading && (
-                  <Text className={`text-lg text-center mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <Text
+                    className={`mb-4 text-center text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
+                  >
                     {dictionaryEntry.extra.reading}
                   </Text>
                 )}
                 {dictionaryEntry?.part_of_speech && (
-                  <Text className={`mt-2 text-base italic ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <Text
+                    className={`mt-2 text-base italic ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
+                  >
                     {dictionaryEntry.part_of_speech}
                   </Text>
                 )}
                 {dictionaryEntry?.definitions?.map((definition, index) => (
-                  <Text 
+                  <Text
                     key={index}
                     className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}
                   >
@@ -243,22 +282,30 @@ export default function StudyDeckScreen() {
           </View>
         </GestureDetector>
 
-        <View className="flex-row items-center justify-between py-8">
+        <View className='flex-row items-center justify-between py-8'>
           <Button
-            variant="ghost"
+            variant='ghost'
             onPress={goToPrevCard}
             disabled={currentIndex === 0}
             className={currentIndex === 0 ? 'opacity-50' : ''}
           >
-            <ChevronLeft size={24} className={isDark ? 'text-white' : 'text-gray-900'} />
+            <ChevronLeft
+              size={24}
+              className={isDark ? 'text-white' : 'text-gray-900'}
+            />
           </Button>
           <Button
-            variant="ghost"
+            variant='ghost'
             onPress={goToNextCard}
             disabled={currentIndex === flashcards.length - 1}
-            className={currentIndex === flashcards.length - 1 ? 'opacity-50' : ''}
+            className={
+              currentIndex === flashcards.length - 1 ? 'opacity-50' : ''
+            }
           >
-            <ChevronRight size={24} className={isDark ? 'text-white' : 'text-gray-900'} />
+            <ChevronRight
+              size={24}
+              className={isDark ? 'text-white' : 'text-gray-900'}
+            />
           </Button>
         </View>
       </View>

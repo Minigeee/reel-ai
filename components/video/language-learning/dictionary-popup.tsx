@@ -88,9 +88,9 @@ export function DictionaryPopup({
         <Text className='text-lg font-bold text-white'>{word}</Text>
         <View className='flex-row gap-2'>
           {!isInFlashcards && (
-            <Button 
-              size='icon' 
-              variant='ghost' 
+            <Button
+              size='icon'
+              variant='ghost'
               onPress={handleAddToFlashcards}
               disabled={addFlashcard.isPending}
             >

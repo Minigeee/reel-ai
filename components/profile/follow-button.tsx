@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import { useAuth } from '../../lib/providers/auth-provider';
 import { supabase } from '../../lib/supabase';
 
@@ -62,8 +62,8 @@ export function FollowButton({ userId }: FollowButtonProps) {
 
   if (isLoading) {
     return (
-      <TouchableOpacity className="px-4 py-2 bg-gray-200 rounded-full" disabled>
-        <ActivityIndicator size="small" />
+      <TouchableOpacity className='rounded-full bg-gray-200 px-4 py-2' disabled>
+        <ActivityIndicator size='small' />
       </TouchableOpacity>
     );
   }
@@ -71,11 +71,11 @@ export function FollowButton({ userId }: FollowButtonProps) {
   if (isFollowing) {
     return (
       <TouchableOpacity
-        className="px-4 py-2 bg-gray-200 rounded-full"
+        className='rounded-full bg-gray-200 px-4 py-2'
         onPress={() => unfollowMutation.mutate()}
         disabled={unfollowMutation.isPending}
       >
-        <Text className="font-semibold text-gray-800">
+        <Text className='font-semibold text-gray-800'>
           {unfollowMutation.isPending ? 'Unfollowing...' : 'Following'}
         </Text>
       </TouchableOpacity>
@@ -84,11 +84,11 @@ export function FollowButton({ userId }: FollowButtonProps) {
 
   return (
     <TouchableOpacity
-      className="px-4 py-2 bg-blue-500 rounded-full"
+      className='rounded-full bg-blue-500 px-4 py-2'
       onPress={() => followMutation.mutate()}
       disabled={followMutation.isPending}
     >
-      <Text className="font-semibold text-white">
+      <Text className='font-semibold text-white'>
         {followMutation.isPending ? 'Following...' : 'Follow'}
       </Text>
     </TouchableOpacity>

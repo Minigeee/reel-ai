@@ -1,5 +1,5 @@
 import { Redirect, Tabs } from 'expo-router';
-import { Book, Home, Plus, Search, Settings, User } from 'lucide-react-native';
+import { Book, Home, Plus, Search, User } from 'lucide-react-native';
 import { useAuth } from '~/lib/providers/auth-provider';
 import { useColorScheme } from '~/lib/useColorScheme';
 

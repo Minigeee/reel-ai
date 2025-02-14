@@ -1,6 +1,6 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
 import type { Tables } from '~/lib/database.types';
 import { supabase } from '~/lib/supabase';
-import { useInfiniteQuery } from '@tanstack/react-query';
 
 const PAGE_SIZE = 10;
 
@@ -36,4 +36,4 @@ export function useVideos() {
       return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
     },
   });
-} 
+}

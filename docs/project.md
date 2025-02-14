@@ -10,6 +10,7 @@ Reel AI is a TikTok-style short video platform designed to revolutionize languag
 - Interactive learning features integrated with video content
 
 Key Benefits:
+
 - Natural language acquisition through native content
 - Real-world context and cultural immersion
 - Personalized difficulty levels and progression
@@ -22,6 +23,7 @@ Primary Focus: Language Learners (Beginner to Advanced)
 Secondary Users: Content Creators making language learning content
 
 User Stories:
+
 1. "As a language learner, I want to watch videos with dual subtitles (native + translation)"
 2. "As a language learner, I want to tap on words I don't know to see translations and save them"
 3. "As a language learner, I want to find content matching my proficiency level"
@@ -33,6 +35,7 @@ User Stories:
 ## 3. Project Requirements
 
 Week 1 Core Requirements:
+
 - Complete video playback system with learning features:
   - Dual subtitle system
   - Interactive word/phrase translation
@@ -42,12 +45,12 @@ Week 1 Core Requirements:
 - Content categorization by language level and topic
 
 Week 2 AI Features:
+
 1. ComprehensionAI
    - Automatic content difficulty analysis
    - Smart vocabulary tracking
    - Grammar pattern recognition
    - Pronunciation assessment
-   
 2. ContentMatchAI
    - Personalized content recommendations
    - Learning progress tracking
@@ -57,18 +60,21 @@ Week 2 AI Features:
 ## 4. Core Features and Systems
 
 1. Video Learning System
+
    - Interactive subtitle system
    - Word/phrase translation engine
    - Pronunciation practice tools
    - Progress tracking and spaced repetition
 
 2. AI Enhancement System
+
    - Content difficulty analysis
    - Grammar pattern recognition
    - Pronunciation assessment
    - Personalized learning paths
 
 3. Content Management System
+
    - Content categorization by language and level
    - Topic-based organization
    - Smart tagging for language features
@@ -83,12 +89,14 @@ Week 2 AI Features:
 ## 5. Success Criteria
 
 Week 1 Success Metrics:
+
 - Implementation of all core learning features
 - Functional subtitle and translation system
 - Smooth video playback with interactive features
 - Working content discovery system
 
 Week 2 Success Metrics:
+
 - Implementation of AI-powered learning features
 - Personalized content recommendations
 - Demonstrable vocabulary retention tracking
@@ -97,29 +105,34 @@ Week 2 Success Metrics:
 ## 6. Tech Stack
 
 Frontend:
+
 - React Native for mobile-first development
 - Expo for cross-platform deployment
 - TailwindCSS for styling
 
 Backend Processing:
+
 - Node.js for API services
 - FFmpeg for video processing
 - Natural Language Processing libraries
 - Custom language learning algorithms
 
 Cloud Services:
+
 - Supabase for backend services:
   - Authentication
   - Database
   - Storage
 
 AI/ML Services:
+
 - TensorFlow/PyTorch for ML models
 - OpenAI API for translations and analysis
 - Custom ML models for language difficulty assessment
 - Speech recognition APIs for pronunciation
 
 Development Tools:
+
 - Git for version control
 - GitHub Actions for CI/CD
 - Docker for development environment

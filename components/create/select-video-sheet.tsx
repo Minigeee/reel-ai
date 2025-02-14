@@ -1,17 +1,20 @@
+import { BottomSheetView } from '@gorhom/bottom-sheet';
+import * as ImagePicker from 'expo-image-picker';
+import { Camera, Image } from 'lucide-react-native';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Sheet } from '~/components/ui/sheet';
 import { Text } from '~/components/ui/text';
-import { Camera, Image } from 'lucide-react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { useCreatorStore } from '~/lib/stores/creator-store';
-import { BottomSheetView } from '@gorhom/bottom-sheet';
 
 interface SelectVideoSheetProps {
   isVisible: boolean;
   onClose: () => void;
 }
 
-export function SelectVideoSheet({ isVisible, onClose }: SelectVideoSheetProps) {
+export function SelectVideoSheet({
+  isVisible,
+  onClose,
+}: SelectVideoSheetProps) {
   const setVideoFile = useCreatorStore((state) => state.setVideoFile);
 
   const pickVideo = async () => {
@@ -75,4 +78,4 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 16,
   },
-}); 
+});

@@ -5,10 +5,10 @@ import {
   FlatList,
   Image,
   Pressable,
+  RefreshControl,
   Text,
   TextInput,
   View,
-  RefreshControl,
 } from 'react-native';
 import {
   Select,
@@ -226,19 +226,21 @@ export function SearchScreen() {
             <RefreshControl
               refreshing={isRefetchingVideos}
               onRefresh={refetchVideos}
-              tintColor="#666"
+              tintColor='#666'
             />
           }
           renderItem={({ item }) => (
             <Pressable
-              className='my-2 rounded-lg border border-border bg-card overflow-hidden'
+              className='my-2 overflow-hidden rounded-lg border border-border bg-card'
               onPress={() => router.push(`/(tabs)/video/${item.id}`)}
             >
               <Image
                 source={{
-                  uri: item.thumbnail_url ?? 'https://via.placeholder.com/320x180?text=No+Thumbnail',
+                  uri:
+                    item.thumbnail_url ??
+                    'https://via.placeholder.com/320x180?text=No+Thumbnail',
                 }}
-                className='w-full h-44'
+                className='h-44 w-full'
                 resizeMode='cover'
               />
               <View className='p-4'>
@@ -282,7 +284,7 @@ export function SearchScreen() {
             <RefreshControl
               refreshing={isRefetchingUsers}
               onRefresh={refetchUsers}
-              tintColor="#666"
+              tintColor='#666'
             />
           }
           onEndReached={loadMore}

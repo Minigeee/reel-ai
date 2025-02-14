@@ -1,7 +1,7 @@
-import { Text, View, ScrollView } from 'react-native';
-import { useState, useMemo } from 'react';
-import type { SubtitleSegment } from '../video-player';
+import { useMemo, useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
 import TinySegmenter from '~/lib/utils/ja-text-segmenter';
+import type { SubtitleSegment } from '../video-player';
 
 interface ScrollingSubtitlesProps {
   language: string;
@@ -10,12 +10,17 @@ interface ScrollingSubtitlesProps {
   onWordPress: (word: string) => void;
 }
 
-export function ScrollingSubtitles({ language, subtitles, currentTime, onWordPress }: ScrollingSubtitlesProps) {
+export function ScrollingSubtitles({
+  language,
+  subtitles,
+  currentTime,
+  onWordPress,
+}: ScrollingSubtitlesProps) {
   const [scrollViewRef, setScrollViewRef] = useState<ScrollView | null>(null);
 
   // Find current subtitle index
   const currentIndex = subtitles.findIndex(
-    segment => currentTime >= segment.start && currentTime <= segment.end
+    (segment) => currentTime >= segment.start && currentTime <= segment.end
   );
 
   // Get previous, current, and next subtitles
@@ -33,28 +38,28 @@ export function ScrollingSubtitles({ language, subtitles, currentTime, onWordPre
   const splitSubtitles = useMemo(() => {
     if (language === 'ja') {
       const segmenter = new TinySegmenter();
-      return visibleSubtitles.map(subtitle => ({
+      return visibleSubtitles.map((subtitle) => ({
         ...subtitle,
         words: segmenter.segment(subtitle.text),
       }));
     }
 
-    return visibleSubtitles.map(subtitle => ({
+    return visibleSubtitles.map((subtitle) => ({
       ...subtitle,
-      words: subtitle.text.split(' ')
+      words: subtitle.text.split(' '),
     }));
   }, [visibleSubtitles]);
 
   return (
     <ScrollView
       ref={setScrollViewRef}
-      className="flex-1 px-4 py-2"
+      className='flex-1 px-4 py-2'
       showsVerticalScrollIndicator={false}
     >
       {splitSubtitles.map((subtitle, index) => {
         const isCurrent = index === (currentIndex === 0 ? 0 : 2);
         return (
-          <View key={subtitle.start} className="mb-4">
+          <View key={subtitle.start} className='mb-4'>
             <Text
               className={`text-xl ${isCurrent ? 'font-bold' : 'text-muted-foreground'}`}
             >
@@ -62,9 +67,10 @@ export function ScrollingSubtitles({ language, subtitles, currentTime, onWordPre
                 <Text
                   key={wordIndex}
                   onPress={() => handleWordPress(word)}
-                  className="active:opacity-70"
+                  className='active:opacity-70'
                 >
-                  {word}{language !== 'ja' && ' '}
+                  {word}
+                  {language !== 'ja' && ' '}
                 </Text>
               ))}
             </Text>

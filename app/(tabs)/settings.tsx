@@ -9,7 +9,7 @@ import {
   Volume2,
 } from 'lucide-react-native';
 import { useState } from 'react';
-import { ScrollView, View, Pressable } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { Button } from '~/components/ui/button';
 import {
   Select,
@@ -20,11 +20,11 @@ import {
 } from '~/components/ui/select';
 import { Switch } from '~/components/ui/switch';
 import { Text } from '~/components/ui/text';
+import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
+import { iconWithClassName } from '~/lib/icons/iconWithClassName';
 import { useAuthStore } from '~/lib/stores/auth-store';
 import { supabase } from '~/lib/supabase';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
-import { iconWithClassName } from '~/lib/icons/iconWithClassName';
 
 const LANGUAGE_OPTIONS = [
   { label: 'English', value: 'en' },
@@ -84,10 +84,12 @@ export default function SettingsScreen() {
   };
 
   const SettingItem = ({ icon: Icon, title, children }: any) => (
-    <View className='flex-row items-center justify-between border-b border-gray-200 dark:border-gray-800 px-4 py-3'>
+    <View className='flex-row items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-800'>
       <View className='flex-row items-center gap-3'>
         <Icon size={20} className='text-gray-600 dark:text-gray-400' />
-        <Text className='text-base text-gray-900 dark:text-gray-100'>{title}</Text>
+        <Text className='text-base text-gray-900 dark:text-gray-100'>
+          {title}
+        </Text>
       </View>
       {children}
     </View>
@@ -178,8 +180,8 @@ export default function SettingsScreen() {
               />
             </SettingItem>
             <SettingItem icon={Moon} title='Dark Mode'>
-              <Switch 
-                checked={isDarkColorScheme} 
+              <Switch
+                checked={isDarkColorScheme}
                 onCheckedChange={toggleColorScheme}
               />
             </SettingItem>
